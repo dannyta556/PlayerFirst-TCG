@@ -1,3 +1,6 @@
 # MERN Kenobi's Cards
 
-# Lessons
+# Features
+
+Home Screen
+Product Pages

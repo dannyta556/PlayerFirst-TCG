@@ -1,6 +1,7 @@
 const data = {
   products: [
     {
+      _id: '1',
       name: 'Ash Blossom & Joyous Spring',
       slug: 'ash-blossom-&-joyous-spring',
       category: 'single',
@@ -20,6 +21,7 @@ const data = {
 You can only use this effect of "Ash Blossom & Joyous Spring" once per turn.`,
     },
     {
+      _id: '2',
       name: 'Tearlaments Scheiren',
       slug: 'tearlaments-scheiren',
       category: 'single',
@@ -35,6 +37,7 @@ You can only use this effect of "Ash Blossom & Joyous Spring" once per turn.`,
       description: `During your Main Phase: You can Special Summon this card from your hand, and if you do, send 1 monster from your hand to the GY, then, send the top 3 cards of your Deck to the GY. If this card is sent to the GY by card effect (except during the Damage Step): You can Fusion Summon 1 Fusion Monster from your Extra Deck, by placing Fusion Materials mentioned on it from your hand, field, and/or GY, including this card from your GY, on the bottom of the Deck in any order. You can only use each effect of "Tearlaments Scheiren" once per turn.`,
     },
     {
+      _id: '3',
       name: 'Despian Quaertis',
       slug: 'despian-quaertis',
       category: 'single',
@@ -51,6 +54,7 @@ You can only use this effect of "Ash Blossom & Joyous Spring" once per turn.`,
 During the Main Phase (Quick Effect): You can change the ATK of all monsters currently on the field to 0 until the end of this turn, except Level 8 or higher Fusion Monsters. If this face-up card in its owner's control leaves the field because of an opponent's card effect: You can add to your hand, or Special Summon, 1 "Fallen of Albaz" or 1 "Despia" monster, from your Deck. You can only use each effect of "Despian Quaeritis" once per turn.`,
     },
     {
+      _id: '4',
       name: 'The Dark Magicians',
       slug: 'the-dark-magicians',
       category: 'single',
