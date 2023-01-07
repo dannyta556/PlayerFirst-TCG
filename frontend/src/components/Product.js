@@ -8,15 +8,16 @@ import axios from 'axios';
 
 function Product(props) {
   const { product } = props;
-
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const {
+    cart: { cartItems },
+  } = state;
   // addToCartHandler
   // Handles anytime a user clicks on addToCart
   // The function will check from the backend if that item is able to be added to the cart
   // It checks if first the item exists, and then if the quantity of the product is valid for the item to be added
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { cart } = state;
-  const addToCartHandler = async () => {
-    const existItem = cart.cartItems.find((x) => x._id === product._id);
+  const addToCartHandler = async (item) => {
+    const existItem = cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     const { data } = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
@@ -25,7 +26,7 @@ function Product(props) {
     }
     ctxDispatch({
       type: 'CART_ADD_ITEM',
-      payload: { ...product, quantity },
+      payload: { ...item, quantity },
     });
   };
 
@@ -45,7 +46,13 @@ function Product(props) {
         )}
 
         <Card.Text>${product.price}</Card.Text>
-        <Button onClick={addToCartHandler}>Add to cart</Button>
+        {product.countInStock === 0 ? (
+          <Button variant="light" disabled>
+            Out of Stock
+          </Button>
+        ) : (
+          <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
+        )}
       </Card.Body>
     </Card>
   );
