@@ -1,29 +1,40 @@
 import express from 'express';
 import data from './data.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import seedRouter from './routes/seedRoutes.js';
+import productRouter from './routes/productRoutes.js';
+import userRouter from './routes/userRoutes.js';
+
+// loads variable from .env file
+dotenv.config();
+
+mongoose.set('strictQuery', false);
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('connected to mongodb');
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
 
 const app = express();
 
-app.get('/api/products', (req, res) => {
-  res.send(data.products);
-});
+// form data in the post request will be converted to json object in req.body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/api/products/slug/:slug', (req, res) => {
-  const product = data.products.find((x) => x.slug === req.params.slug);
-  if (product) {
-    res.send(product);
-  } else {
-    res.status(404).send({ message: 'Product not found' });
-  }
-});
+// import data from sample database
+app.use('/api/seed', seedRouter);
 
-app.get('/api/products/:id', (req, res) => {
-  const product = data.products.find((x) => x._id === req.params.id);
+app.use('/api/products', productRouter);
 
-  if (product) {
-    res.send(product);
-  } else {
-    res.status(404).send({ message: 'Product not found' });
-  }
+app.use('/api/users', userRouter);
+
+// error handler for express
+app.use((err, req, res, next) => {
+  res.status(500).send({ message: err.message });
 });
 
 const port = process.env.PORT || 5000;
