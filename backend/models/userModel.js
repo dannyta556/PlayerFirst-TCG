@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isAdmin: { type: Boolean, default: false, required: true },
-    deckIDs: { type: Array, default: false, required: false },
-    collectionID: { type: Number, default: false, required: false },
+    deckIDs: { type: Array, default: [], required: false },
+    collectionID: { type: Number, required: false },
   },
   {
     timestamps: true,

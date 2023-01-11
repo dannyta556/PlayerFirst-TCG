@@ -52,7 +52,7 @@ export default function CartScreen() {
               {cartItems.map((item) => (
                 <ListGroup.Item key={item._id}>
                   <Row className="align-items-center">
-                    <Col md={4}>
+                    <Col md={5}>
                       <img
                         src={item.image}
                         alt={item.name}
@@ -82,7 +82,7 @@ export default function CartScreen() {
                       </Button>{' '}
                     </Col>
                     <Col md={3}> ${item.price}</Col>
-                    <Col md={2}>
+                    <Col md={1}>
                       <Button
                         variant="light"
                         onClick={() => removeItemHandler(item)}
@@ -104,7 +104,10 @@ export default function CartScreen() {
                   <h3>
                     Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '}
                     items) : $
-                    {cartItems.reduce((a, c) => a + c.price * c.quantity, 0)}
+                    {Math.round(
+                      cartItems.reduce((a, c) => a + c.price * c.quantity, 0) *
+                        100
+                    ) / 100}
                   </h3>
                 </ListGroup.Item>
                 <ListGroup.Item>
