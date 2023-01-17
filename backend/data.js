@@ -68,7 +68,7 @@ You can only use this effect of "Ash Blossom & Joyous Spring" once per turn.`,
       rating: 4.5,
       numReviews: 10,
       number: 'MP22-EN141',
-      rarity: 'Prismatic Secret Raree',
+      rarity: 'Prismatic Secret Rare',
       level: 8,
       description: `1 "Despia" monster + 1 LIGHT or DARK monster
 During the Main Phase (Quick Effect): You can change the ATK of all monsters currently on the field to 0 until the end of this turn, except Level 8 or higher Fusion Monsters. If this face-up card in its owner's control leaves the field because of an opponent's card effect: You can add to your hand, or Special Summon, 1 "Fallen of Albaz" or 1 "Despia" monster, from your Deck. You can only use each effect of "Despian Quaeritis" once per turn.`,

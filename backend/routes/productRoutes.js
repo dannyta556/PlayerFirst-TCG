@@ -5,7 +5,7 @@ import expressAsyncHandler from 'express-async-handler';
 const productRouter = express.Router();
 
 productRouter.get('/', async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find().limit(4);
   res.send(products);
 });
 

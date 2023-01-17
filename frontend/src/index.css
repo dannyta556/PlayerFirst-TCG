@@ -15,7 +15,7 @@ main {
   flex: 1;
 }
 .card-img-top {
-  width: 200px;
+  width: 150px;
 }
 
 .btn-primary,
@@ -66,4 +66,12 @@ main {
 .checkout-steps > div.active {
   border-bottom: 0.2rem solid #f08000;
   color: #f08000;
+}
+
+.navbar-brand {
+  font-size: 35px;
+}
+
+.search-bar {
+  margin-left: 400px;
 }

@@ -13,7 +13,7 @@ export default function SearchBox() {
     navigate(query ? `/search/?query=${query}` : '/search');
   };
   return (
-    <Form className="d-flex met-auto" onSubmit={submitHandler}>
+    <Form className="d-flex met-auto search-bar" onSubmit={submitHandler}>
       <InputGroup>
         <FormControl
           type="text"
@@ -23,6 +23,7 @@ export default function SearchBox() {
           placeholder="search products..."
           aria-label="Search PRoducts"
           aria-describedby="button-search"
+          htmlSize="150"
         ></FormControl>
         <Button variant="outline-primary" type="submit" id="button-search">
           <i className="fas fa-search"></i>

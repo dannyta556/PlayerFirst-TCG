@@ -22,6 +22,9 @@ import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SearchBox from './components/SearchBox';
 import SearchScreen from './screens/SearchScreen';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardScreen from './screens/DashboardScreen';
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -41,49 +44,106 @@ function App() {
       <div className="d-flex flex-column site-container">
         <ToastContainer position="bottom-center" limit={1} />
         <header>
-          <h1>Kenobi's Cards</h1>
-          <SearchBox />
-          <Navbar bg="primary" variant="dark" expand="lg">
-            <Container>
-              <LinkContainer to="/">
-                <Navbar.Brand>Kenobi's Cards</Navbar.Brand>
-              </LinkContainer>
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
-              <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="me-auto w-100 justify-content-end">
-                  <Link to="/cart" className="nav-link">
-                    Cart{' '}
-                    {cart.cartItems.length > 0 && (
-                      <Badge pill bg="danger">
-                        {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
-                      </Badge>
-                    )}
+          <Navbar bg="light" variant="light" expand="lg">
+            <LinkContainer to="/">
+              <Navbar.Brand>Kenobi's Cards</Navbar.Brand>
+            </LinkContainer>
+            <SearchBox className="search-bar" />
+            <Nav className="me-auto w-100 justify-content-end">
+              <Link to="/cart" className="nav-link">
+                Cart{' '}
+                {cart.cartItems.length > 0 && (
+                  <Badge pill bg="danger">
+                    {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                  </Badge>
+                )}
+              </Link>
+              {userInfo ? (
+                <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+                  <LinkContainer to="/profile">
+                    <NavDropdown.Item>User Profile</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/orderHistory">
+                    <NavDropdown.Item>Order History</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/myCollection">
+                    <NavDropdown.Item>My Collection</NavDropdown.Item>
+                  </LinkContainer>
+                  <NavDropdown.Divider />
+                  <Link
+                    className="dropdown-item"
+                    to="#signout"
+                    onClick={signoutHandler}
+                  >
+                    Sign Out
                   </Link>
-                  {userInfo ? (
-                    <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                      <LinkContainer to="/profile">
-                        <NavDropdown.Item>User Profile</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/orderHistory">
-                        <NavDropdown.Item>Order History</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/myCollection">
-                        <NavDropdown.Item>My Collection</NavDropdown.Item>
-                      </LinkContainer>
-                      <NavDropdown.Divider />
-                      <Link
-                        className="dropdown-item"
-                        to="#signout"
-                        onClick={signoutHandler}
-                      >
-                        Sign Out
-                      </Link>
-                    </NavDropdown>
-                  ) : (
-                    <Link className="nav-link" to="/signin">
-                      Sign In{' '}
+                </NavDropdown>
+              ) : (
+                <Link className="nav-link" to="/signin">
+                  Sign In{' '}
+                </Link>
+              )}
+              {userInfo && userInfo.isAdmin && (
+                <NavDropdown title="Admin" id="admin-nav-dropdown">
+                  <LinkContainer to="/admin/dashboard">
+                    <NavDropdown.Item>Dashboard</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/admin/productList">
+                    <NavDropdown.Item>Products</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/admin/orderList">
+                    <NavDropdown.Item>Orders</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/admin/userList">
+                    <NavDropdown.Item>Users</NavDropdown.Item>
+                  </LinkContainer>
+                </NavDropdown>
+              )}
+            </Nav>
+          </Navbar>
+          <Navbar
+            bg="primary"
+            variant="dark"
+            expand="lg"
+            className="gap-3 px-3"
+          >
+            <Container>
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse
+                id="basic-navbar-nav"
+                className="justify-content-center"
+              >
+                <Nav className="flex-grow-1 justify-content-evenly">
+                  <Nav.Item>
+                    <Link to="/search?category=single" className="nav-link">
+                      Singles
                     </Link>
-                  )}
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link to="/search?category=set" className="nav-link">
+                      Card Sets
+                    </Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link to="/decklists" className="nav-link">
+                      Decklists
+                    </Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link to="/deckbuilder" className="nav-link">
+                      Deck Builder
+                    </Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link to="/articles" className="nav-link">
+                      Articles
+                    </Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Link to="/guides" className="nav-link">
+                      Guides
+                    </Link>
+                  </Nav.Item>
                 </Nav>
               </Navbar.Collapse>
             </Container>
@@ -97,15 +157,45 @@ function App() {
               <Route path="/search" element={<SearchScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/signup" element={<SignUpScreen />} />
-              <Route path="/profile" element={<ProfileScreen />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfileScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/placeorder" element={<PlaceOrderScreen />} />
-              <Route path="/order/:id" element={<OrderScreen />} />
-              <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+              <Route
+                path="/order/:id"
+                element={
+                  <ProtectedRoute>
+                    <OrderScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orderhistory"
+                element={
+                  <ProtectedRoute>
+                    <OrderHistoryScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/payment" element={<PaymentMethodScreen />} />
               <Route
                 path="/shipping"
                 element={<ShippingAddressScreen />}
               ></Route>
+              {/* Admin Routes */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <AdminRoute>
+                    <DashboardScreen />
+                  </AdminRoute>
+                }
+              />
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>

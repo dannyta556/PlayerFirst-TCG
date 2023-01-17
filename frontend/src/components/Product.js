@@ -31,7 +31,7 @@ function Product(props) {
   };
 
   return (
-    <Card>
+    <Card border="dark">
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className="card-img-top" alt={product.name} />
       </Link>
@@ -44,8 +44,17 @@ function Product(props) {
         ) : (
           <></>
         )}
-
-        <Card.Text>${product.price}</Card.Text>
+        {product.category === 'single' ? (
+          <>
+            <Card.Text>{product.number}</Card.Text>
+            <Card.Text>{product.rarity}</Card.Text>
+          </>
+        ) : (
+          <></>
+        )}
+        <Card.Text>
+          Starting At: <strong>${product.price}</strong>
+        </Card.Text>
         {product.countInStock === 0 ? (
           <Button variant="light" disabled>
             Out of Stock

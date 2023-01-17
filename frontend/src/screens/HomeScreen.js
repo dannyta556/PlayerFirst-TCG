@@ -47,7 +47,8 @@ function HomeScreen() {
       <Helmet>
         <title>Kenobi's Cards</title>
       </Helmet>
-      <h1>Featured Products</h1>
+      <h2>Featured Products</h2>
+      <br></br>
       <div className="products">
         {loading ? (
           <LoadingBox />
