@@ -18,7 +18,8 @@ main {
   width: 200px;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-outline-rimary {
   background-color: #4050dd;
 }
 
