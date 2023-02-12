@@ -94,17 +94,33 @@ function ProductScreen() {
                 <title>Kenobi's Cards - {product.name}</title>
               </Helmet>
               <h1>{product.name}</h1>
+              <h5>{product.card_sets[0].set_code}</h5>
+              <h5>{product.card_sets[0].set_rarity}</h5>
             </ListGroup.Item>
-            <ListGroup.Item>
-              <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
-              ></Rating>
-            </ListGroup.Item>
+            {product.category !== 'single' ? (
+              <>
+                <ListGroup.Item>
+                  <Rating
+                    rating={product.rating}
+                    numReviews={product.numReviews}
+                  ></Rating>
+                </ListGroup.Item>
+              </>
+            ) : (
+              <></>
+            )}
             <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
             <ListGroup.Item>
-              Description:
-              <p>{product.description}</p>
+              <strong>Description:</strong>
+              <p>{product.desc}</p>
+              {product.category === 'single' ? (
+                <>
+                  <p>atk: {product.atk}</p>
+                  <p>def: {product.def}</p>
+                </>
+              ) : (
+                <></>
+              )}
             </ListGroup.Item>
           </ListGroup>
         </Col>

@@ -25,6 +25,9 @@ import SearchScreen from './screens/SearchScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardScreen from './screens/DashboardScreen';
 import AdminRoute from './components/AdminRoute';
+import GuidesScreen from './screens/GuidesScreen';
+import ArticlesScreen from './screens/AritclesScreen';
+import ArticleScreen from './screens/ArticleScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -157,6 +160,9 @@ function App() {
               <Route path="/search" element={<SearchScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/signup" element={<SignUpScreen />} />
+              <Route path="/guides" element={<GuidesScreen />} />
+              <Route path="/articles" element={<ArticlesScreen />} />
+              <Route path="/articles/:slug" element={<ArticleScreen />} />
               <Route
                 path="/profile"
                 element={

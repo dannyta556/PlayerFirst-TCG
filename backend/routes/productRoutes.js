@@ -1,6 +1,7 @@
 import express from 'express';
 import Product from '../models/productModel.js';
 import expressAsyncHandler from 'express-async-handler';
+import { isAuth, isAdmin } from '../utils.js';
 
 const productRouter = express.Router();
 
@@ -113,6 +114,15 @@ productRouter.get('/slug/:slug', async (req, res) => {
   }
 });
 
+productRouter.get('/name/:name', async (req, res) => {
+  const product = await Product.findOne({ slug: req.params.name });
+  if (product) {
+    res.send(product);
+  } else {
+    res.status(404).send({ message: 'Product not found' });
+  }
+});
+
 productRouter.get('/:id', async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
@@ -121,5 +131,7 @@ productRouter.get('/:id', async (req, res) => {
     res.status(404).send({ message: 'Product not found' });
   }
 });
+
+// Admin Routes
 
 export default productRouter;
