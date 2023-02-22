@@ -17,7 +17,6 @@ userRouter.post(
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin,
-          collectionID: user.collectionID,
           deckIDs: user.deckIDs,
           token: generateToken(user),
         });
@@ -73,4 +72,115 @@ userRouter.put(
   })
 );
 
+userRouter.get(
+  '/collection',
+  expressAsyncHandler(async (req, res) => {
+    const { query } = req;
+    const email = query.email;
+    const user = await User.findOne({ email });
+    if (user) {
+      res.send(user.cardCollection);
+    } else {
+      res.status(404).send({ message: 'User error' });
+    }
+  })
+);
+
+// remove card from cardCollection array
+// slug for which card to remove
+userRouter.post(
+  '/removeCard',
+  expressAsyncHandler(async (req, res) => {
+    const slug = req.body.slug;
+    const email = req.body.email;
+
+    await User.findOneAndUpdate(
+      {
+        email,
+      },
+      {
+        $pull: {
+          cardCollection: {
+            slug: slug,
+          },
+        },
+      }
+    );
+    res.send({
+      message: 'Success',
+    });
+  })
+);
+
+// add card to cardCollection array
+// if card exist increment card in array by 1
+userRouter.post(
+  '/addCard',
+  expressAsyncHandler(async (req, res) => {
+    const slug = req.body.slug;
+    const name = req.body.name;
+    const email = req.body.email;
+
+    await User.findOneAndUpdate(
+      {
+        email,
+      },
+      {
+        $push: {
+          cardCollection: {
+            name: name,
+            slug: slug,
+            count: 1,
+          },
+        },
+      }
+    );
+  })
+);
+
+userRouter.put(
+  '/incrementCard',
+  expressAsyncHandler(async (req, res) => {
+    const slug = req.body.slug;
+    const email = req.body.email;
+
+    const response = await User.findOneAndUpdate(
+      {
+        email: email,
+        'cardCollection.slug': slug,
+      },
+      {
+        $inc: {
+          'cardCollection.$.count': 1,
+        },
+      }
+    );
+    if (response) {
+      res.send(response);
+    }
+  })
+);
+
+userRouter.put(
+  '/decrementCard',
+  expressAsyncHandler(async (req, res) => {
+    const slug = req.body.slug;
+    const email = req.body.email;
+
+    const response = await User.findOneAndUpdate(
+      {
+        email: email,
+        'cardCollection.slug': slug,
+      },
+      {
+        $inc: {
+          'cardCollection.$.count': -1,
+        },
+      }
+    );
+    if (response) {
+      res.send(response);
+    }
+  })
+);
 export default userRouter;

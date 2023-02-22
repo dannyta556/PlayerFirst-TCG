@@ -55,7 +55,6 @@ export default function GuidesScreen() {
         </Col>
         <Col md={6}>
           <Card border="dark">
-            <Card.Img variant="top" src="holder.js/100px160" />
             <Card.Body>
               <Link to={`/guides/top-5-best-anime-decks-to-play`}>
                 <Card.Title>Top 5 Best Anime Decks to Play</Card.Title>

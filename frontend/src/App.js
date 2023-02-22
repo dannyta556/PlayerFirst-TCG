@@ -28,6 +28,9 @@ import AdminRoute from './components/AdminRoute';
 import GuidesScreen from './screens/GuidesScreen';
 import ArticlesScreen from './screens/AritclesScreen';
 import ArticleScreen from './screens/ArticleScreen';
+import MyCollection from './screens/MyCollection';
+import DecklistsScreen from './screens/DecklistsScreen';
+import DeckBuilder from './screens/DeckBuilder';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -163,6 +166,16 @@ function App() {
               <Route path="/guides" element={<GuidesScreen />} />
               <Route path="/articles" element={<ArticlesScreen />} />
               <Route path="/articles/:slug" element={<ArticleScreen />} />
+              <Route path="/decklists" element={<DecklistsScreen />} />
+              <Route path="/deckbuilder" element={<DeckBuilder />} />
+              <Route
+                path="/myCollection"
+                element={
+                  <ProtectedRoute>
+                    <MyCollection />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/profile"
                 element={

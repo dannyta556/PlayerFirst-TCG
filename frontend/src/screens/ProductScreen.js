@@ -83,7 +83,7 @@ function ProductScreen() {
         <Col md={6}>
           <img
             className="img-large"
-            src={product.image}
+            src={product.card_images[0].image_url}
             alt={product.name}
           ></img>
         </Col>
@@ -94,8 +94,14 @@ function ProductScreen() {
                 <title>Kenobi's Cards - {product.name}</title>
               </Helmet>
               <h1>{product.name}</h1>
-              <h5>{product.card_sets[0].set_code}</h5>
-              <h5>{product.card_sets[0].set_rarity}</h5>
+              {product.card_set ? (
+                <>
+                  <h5>{product.card_sets[0].set_code}</h5>
+                  <h5>{product.card_sets[0].set_rarity}</h5>
+                </>
+              ) : (
+                <> </>
+              )}
             </ListGroup.Item>
             {product.category !== 'single' ? (
               <>
@@ -111,12 +117,16 @@ function ProductScreen() {
             )}
             <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
             <ListGroup.Item>
+              <strong>Type:</strong> {'  '}
+              {product.type}
+              <br></br>
               <strong>Description:</strong>
               <p>{product.desc}</p>
-              {product.category === 'single' ? (
+              {product.category === 'single' && product.atk ? (
                 <>
-                  <p>atk: {product.atk}</p>
-                  <p>def: {product.def}</p>
+                  <strong>atk: </strong> {product.atk}
+                  <br></br>
+                  <strong>def: </strong> {product.def}
                 </>
               ) : (
                 <></>
@@ -131,7 +141,7 @@ function ProductScreen() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>${product.price}</Col>
+                    <Col>${product.card_prices[0].cardmarket_price}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -159,6 +169,14 @@ function ProductScreen() {
             </Card.Body>
           </Card>
         </Col>
+      </Row>
+      <br></br>
+      <Row>
+        {product.card_set ? (
+          <h4>Recommended Cards</h4>
+        ) : (
+          <h4>Recommended Products</h4>
+        )}
       </Row>
     </div>
   );

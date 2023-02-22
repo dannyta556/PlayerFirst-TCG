@@ -16,13 +16,6 @@ async function productData() {
       newArray.push(product.name);
       var query = { name: product.name };
       console.log(query);
-      /*
-      let doc = Product.updateOne(query, {
-        $set: {
-          slug: slugify(product.name),
-        },
-      });
-      */
     });
   })
     .exec()
@@ -50,16 +43,6 @@ seedRouter.get('/', async (req, res) => {
       },
     }
   );
-  /*
-  Product.find({}, (err, products) => {
-    if (err) {
-    }
-    products.map((product) => {
-      console.log(product._id);
-      Product.findOneAndUpdate(product,)
-    });
-  });
-      */
 
   await User.remove({});
   const createdUsers = await User.insertMany(data.users);

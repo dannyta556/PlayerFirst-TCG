@@ -57,8 +57,7 @@ function Product(props) {
           <></>
         )}
         <Card.Text>
-          Starting At:{' '}
-          <strong>${product.card_prices[0].cardmarket_price}</strong>
+          Starting At: <strong>${product.price}</strong>
         </Card.Text>
         {product.countInStock === 0 ? (
           <Button variant="light" disabled>

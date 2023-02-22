@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
+import slugify from 'slugify';
 
 const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
-    slug: { type: String, unique: true },
+    slug: { type: String, unique: true, required: true },
+    price: { type: Number },
     brand: { type: String, required: false },
     category: { type: String, required: false },
     desc: { type: String, required: true },
@@ -26,6 +28,16 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre('validate', function (next) {
+  if (this.name) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+  if (this.card_prices) {
+    this.price = parseFloat(this.card_prices[0].cardmarket_price);
+  }
+  next();
+});
 
 const Product = mongoose.model('Product', productSchema);
 export default Product;

@@ -10,7 +10,7 @@ productRouter.get('/', async (req, res) => {
   res.send(products);
 });
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 6;
 
 productRouter.get(
   '/search',
@@ -60,7 +60,7 @@ productRouter.get(
       order === 'featured'
         ? { featured: -1 }
         : order === 'lowest'
-        ? { price: 1 }
+        ? { card_prices: 1 }
         : order === 'highest'
         ? { price: -1 }
         : order === 'toprated'
@@ -78,7 +78,6 @@ productRouter.get(
       .sort(sortOrder)
       .skip(pageSize * (page - 1))
       .limit(pageSize);
-    //const products = await Product.find();
 
     const countProducts = await Product.countDocuments({
       ...queryFilter,
@@ -93,7 +92,70 @@ productRouter.get(
       page,
       pages: Math.ceil(countProducts / pageSize),
     });
-    //res.send(products);
+  })
+);
+
+const CARD_SEARCH_SIZE = 12;
+
+productRouter.get(
+  '/cardSearch',
+  expressAsyncHandler(async (req, res) => {
+    const { query } = req;
+    const pageSize = query.pageSize || CARD_SEARCH_SIZE;
+    const page = query.page || 1;
+    const category = query.category || 'single';
+    const searchQuery = query.query || '';
+
+    // For card search
+    const level = query.level || '';
+    const cardType = query.cardType || '';
+    const atk = query.atk || '';
+    const def = query.def || '';
+    const attribute = query.attribute || '';
+
+    const queryFilter =
+      searchQuery && searchQuery !== 'all'
+        ? {
+            name: {
+              $regex: searchQuery,
+              $options: 'i',
+            },
+          }
+        : {};
+
+    const categoryFilter = category && category !== 'all' ? { category } : {};
+
+    const lvlFilter = level;
+    const attributeFilter = attribute;
+    const atkFilter = atk;
+    const defFilter = def;
+
+    const products = await Product.find({
+      ...queryFilter,
+      ...categoryFilter,
+      ...lvlFilter,
+      ...attributeFilter,
+      ...atkFilter,
+      ...defFilter,
+    })
+      .skip(pageSize * (page - 1))
+      .limit(pageSize);
+
+    const countProducts = await Product.countDocuments({
+      ...queryFilter,
+      ...categoryFilter,
+      ...lvlFilter,
+      ...attributeFilter,
+      ...atkFilter,
+      ...defFilter,
+    });
+
+    res.send({
+      products,
+      countProducts,
+      page,
+      pages: Math.ceil(countProducts / pageSize),
+    });
   })
 );
 
@@ -102,6 +164,23 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const categories = await Product.find().distinct('category');
     res.send(categories);
+  })
+);
+
+productRouter.get(
+  '/attributes',
+  expressAsyncHandler(async (req, res) => {
+    const attributes = await Product.find().distinct('attribute');
+    res.send(attributes);
+  })
+);
+
+productRouter.get(
+  '/cardTypes',
+  expressAsyncHandler(async (req, res) => {
+    const cardTypes = await Product.find().distinct('type');
+
+    res.send(cardTypes);
   })
 );
 

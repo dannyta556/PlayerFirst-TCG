@@ -54,7 +54,7 @@ export default function CartScreen() {
                   <Row className="align-items-center">
                     <Col md={5}>
                       <img
-                        src={item.image}
+                        src={item.card_images[0].image_url}
                         alt={item.name}
                         className="img-fluid rounded img-thumbnail"
                       ></img>{' '}

@@ -75,3 +75,27 @@ main {
 .search-bar {
   margin-left: 400px;
 }
+
+.search-box {
+  border: 1px #404040 solid;
+  height: 600px;
+}
+
+.search-box-title {
+  text-align: center;
+}
+.search-box-inputbox {
+  height: 30px;
+  width: 100px;
+  font-size: 14px;
+}
+
+.results-box {
+  border: 0.5px #404040 solid;
+  height: 275px;
+}
+
+.count-input {
+  width: 50px;
+  text-align: center;
+}

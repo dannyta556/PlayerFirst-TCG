@@ -1,18 +1,10 @@
 import axios from 'axios';
-import { useContext, useEffect, useReducer } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Badge from 'react-bootstrap/Badge';
-import Rating from '../components/Rating';
+import { useEffect, useReducer } from 'react';
+import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { getError } from '../utils';
-import { Store } from '../Store';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -28,7 +20,6 @@ const reducer = (state, action) => {
 };
 
 function ArticleScreen() {
-  const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
 
@@ -57,6 +48,9 @@ function ArticleScreen() {
     <MessageBox variant="danger">{error}</MessageBox>
   ) : (
     <div>
+      <Helmet>
+        <title>{article.title}</title>
+      </Helmet>
       <h1>{article.title}</h1>
       <h4>
         <i>{article.desc}</i>

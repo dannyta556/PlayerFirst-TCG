@@ -24,7 +24,7 @@ articleRouter.get('/', async (req, res) => {
       author: 'James Smith',
     },
   ];
-  const getArticles = await Article.find().sort({
+  const getArticles = await Article.find({ type: 'article' }).sort({
     createdAt: 'desc',
   });
   res.send(getArticles);
