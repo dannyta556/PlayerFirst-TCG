@@ -30,7 +30,8 @@ import ArticlesScreen from './screens/AritclesScreen';
 import ArticleScreen from './screens/ArticleScreen';
 import MyCollection from './screens/MyCollection';
 import DecklistsScreen from './screens/DecklistsScreen';
-import DeckBuilder from './screens/DeckBuilder';
+import DecksScreen from './screens/DecksScreen';
+import CreateDeckScreen from './screens/CreateDeckScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -136,7 +137,7 @@ function App() {
                     </Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Link to="/deckbuilder" className="nav-link">
+                    <Link to="/mydecks" className="nav-link">
                       Deck Builder
                     </Link>
                   </Nav.Item>
@@ -167,7 +168,8 @@ function App() {
               <Route path="/articles" element={<ArticlesScreen />} />
               <Route path="/articles/:slug" element={<ArticleScreen />} />
               <Route path="/decklists" element={<DecklistsScreen />} />
-              <Route path="/deckbuilder" element={<DeckBuilder />} />
+              <Route path="/mydecks" element={<DecksScreen />} />
+              <Route path="/newDeck" element={<CreateDeckScreen />} />
               <Route
                 path="/myCollection"
                 element={
