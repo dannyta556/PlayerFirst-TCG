@@ -92,7 +92,8 @@ main {
 
 .results-box {
   border: 0.5px #404040 solid;
-  height: 275px;
+  height: 250px;
+  width: 370px;
 }
 
 .count-input {
@@ -114,4 +115,21 @@ main {
 
 .extra-deck {
   height: 200px;
+}
+
+.card-preview {
+  height: 200px;
+}
+
+.card-name {
+  margin-left: 15px;
+}
+
+.description {
+  margin-left: 15px;
+  font-size: 12px;
+}
+
+.preview-btns {
+  text-align: right;
 }

@@ -17,24 +17,31 @@ const reducer = (state, action) => {
     case 'FETCH_SUCCESS':
       return {
         ...state,
-        decklists: action.payload.decklists,
-        page: action.payload.page,
-        pages: action.payload.pages,
-        countDecklists: action.payload.countDecklists,
+        decklists: action.payload,
         loading: false,
       };
+
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }
 };
+const priceReducer = (state, action) => {
+  switch (action.type) {
+    case 'FETCH_PRICE':
+      return {
+        ...state,
+        prices: action.payload,
+      };
+    default:
+      return state;
+  }
+};
 
-export default function DecklistsScreen() {
+export default function UserDecklistsScreen() {
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const date = sp.get('date') || 'all';
-  const tournament = sp.get('tournament') || 'all';
   const archetype = sp.get('archetype') || 'all';
   const page = sp.get('page') || 1;
 
@@ -44,56 +51,54 @@ export default function DecklistsScreen() {
     error: '',
   });
 
+  const [{ prices }, priceDispatch] = useReducer(priceReducer, {
+    prices: [],
+  });
+
+  const getFilterUrl = (filter) => {
+    const filterPage = filter.page || page;
+    const filterArchetype = filter.archetype || archetype;
+
+    return `/decklists/tournament?archetype=${filterArchetype}&page=${filterPage}`;
+  };
+
   useEffect(() => {
+    const fetchPrices = async (r) => {
+      dispatch({ type: 'FETCH_REQUEST' });
+      try {
+        let prices = [];
+        for (let index = 0; index < r.length; index++) {
+          const deckPrice = await axios.get(
+            `/api/decklists/price?id=${r[index]._id}`
+          );
+          prices.push(deckPrice.data.totalPrice);
+        }
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: r,
+        });
+        priceDispatch({
+          type: 'FETCH_PRICE',
+          payload: prices,
+        });
+      } catch (err) {
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+      }
+    };
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get(
-          `/api/decklists/tournamentDeckSearch?page=${page}&date=${date}&tournament=${tournament}&archetype=${archetype}`
-        );
-        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        await axios.get(`/api/decklists/`).then((r) => {
+          fetchPrices(r.data);
+        });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchData();
-  }, [page, date, tournament, archetype]);
+  }, []);
 
-  const [dates, setDates] = useState([]);
-  useEffect(
-    () => {
-      const fetchDates = async () => {
-        try {
-          const { data } = await axios.get(`/api/decklists/dates`);
-          setDates(data);
-        } catch (err) {
-          toast.error(getError(err));
-        }
-      };
-      fetchDates();
-    },
-    [dispatch],
-    dates
-  );
-
-  const [tournaments, setTournaments] = useState([]);
   const [archetypes, setArchetypes] = useState([]);
-  useEffect(
-    () => {
-      const fetchTournaments = async () => {
-        try {
-          const { data } = await axios.get(`/api/decklists/tournaments`);
-          setTournaments(data);
-        } catch (err) {
-          toast.error(getError(err));
-        }
-      };
-      fetchTournaments();
-    },
-    [dispatch],
-    tournaments
-  );
-
   useEffect(
     () => {
       const fetchArchetypes = async () => {
@@ -110,19 +115,10 @@ export default function DecklistsScreen() {
     archetypes
   );
 
-  const getFilterUrl = (filter) => {
-    const filterPage = filter.page || page;
-    const filterDate = filter.date || date;
-    const filterTournament = filter.tournament || tournament;
-    const filterArchetype = filter.archetype || archetype;
-
-    return `/decklists/tournament?date=${filterDate}&tournament=${filterTournament}&archetype=${filterArchetype}&page=${filterPage}`;
-  };
-
   return loading ? (
     <LoadingBox />
   ) : error ? (
-    <MessageBox />
+    <MessageBox variant="danger">{error}</MessageBox>
   ) : (
     <div>
       <div>
@@ -130,41 +126,11 @@ export default function DecklistsScreen() {
           <title>Decklists</title>
         </Helmet>
         <Row>
-          <h3>Tournament Decklists</h3>
+          <h3>User Decklists</h3>
         </Row>
         <Row>
           <Col md={3}>
             <h4>Filters</h4>
-            <div>
-              <h4>Date</h4>
-              <ul>
-                {dates.map((d) => (
-                  <li key={d}>
-                    <Link
-                      className={d === date ? 'text-bold' : ''}
-                      to={getFilterUrl({ date: d })}
-                    >
-                      {d}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4>Tournament</h4>
-              <ul>
-                {tournaments.map((t) => (
-                  <li key={t}>
-                    <Link
-                      className={t === tournament ? 'text-bold' : ''}
-                      to={getFilterUrl({ tournament: t })}
-                    >
-                      {t}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
             <div>
               <h4>Archetype</h4>
               <ul>
@@ -192,32 +158,27 @@ export default function DecklistsScreen() {
               <thead>
                 <tr>
                   <th>Deck</th>
-                  <th>Tournament</th>
-                  <th>Date</th>
-                  <th>Placed</th>
                   <th>Duelist</th>
                   <th>Archetype</th>
                   <th>Price</th>
                 </tr>
               </thead>
               <tbody>
-                {decklists.map((deck) => (
+                {decklists.map((deck, index) => (
                   <tr key={deck._id}>
                     <td>
                       <Link to={`/decklist/${deck._id}`}>{deck.name}</Link>
                     </td>
-                    <td>{deck.tournament}</td>
-                    <td>{deck.date}</td>
-                    <td>{deck.placement}</td>
                     <td>{deck.duelist}</td>
                     <td>{deck.archetype}</td>
-                    <td>$314.12</td>
+                    <td>${prices[index]}</td>
                   </tr>
                 ))}
               </tbody>
             </Table>
           </Col>
         </Row>
+        <div>{prices.data}</div>
       </div>
     </div>
   );

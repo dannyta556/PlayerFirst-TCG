@@ -5,10 +5,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import MessageBox from '../components/MessageBox';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Accordion from 'react-bootstrap/Accordion';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
+import Table from 'react-bootstrap/esm/Table';
 
 export default function CartScreen() {
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ export default function CartScreen() {
         <title>Shopping Cart</title>
       </Helmet>
       <h1>Shopping Cart</h1>
+      <br></br>
       <Row>
         <Col md={8}>
           {cartItems.length === 0 ? (
@@ -49,50 +52,113 @@ export default function CartScreen() {
             </MessageBox>
           ) : (
             <ListGroup>
-              {cartItems.map((item) => (
-                <ListGroup.Item key={item._id}>
-                  <Row className="align-items-center">
-                    <Col md={5}>
-                      <img
-                        src={item.card_images[0].image_url}
-                        alt={item.name}
-                        className="img-fluid rounded img-thumbnail"
-                      ></img>{' '}
-                      <Link to={`/product/${item.slug}`}>{item.name}</Link>
-                    </Col>
-                    <Col md={3}>
-                      <Button
-                        variant="light"
-                        onClick={() =>
-                          updateCartHandler(item, item.quantity - 1)
-                        }
-                        disabled={item.quantity === 1}
-                      >
-                        <i className="fas fa-minus-circle"></i>
-                      </Button>{' '}
-                      <span>{item.quantity}</span>{' '}
-                      <Button
-                        variant="light"
-                        onClick={() =>
-                          updateCartHandler(item, item.quantity + 1)
-                        }
-                        disabled={item.quantity === item.countInStock}
-                      >
-                        <i className="fas fa-plus-circle"></i>
-                      </Button>{' '}
-                    </Col>
-                    <Col md={3}> ${item.price}</Col>
-                    <Col md={1}>
-                      <Button
-                        variant="light"
-                        onClick={() => removeItemHandler(item)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </Button>
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-              ))}
+              {cartItems.map((item) =>
+                !item.mainDeck ? (
+                  <ListGroup.Item key={item._id}>
+                    <Row className="align-items-center">
+                      <Col md={5}>
+                        <img
+                          src={`/images/${item.name.replace(/ /g, '_')}.jpg`}
+                          alt={item.name}
+                          className="img-fluid rounded img-thumbnail"
+                        ></img>{' '}
+                        <Link to={`/product/${item.slug}`}>{item.name}</Link>
+                      </Col>
+                      <Col md={3}>
+                        <Button
+                          variant="light"
+                          onClick={() =>
+                            updateCartHandler(item, item.quantity - 1)
+                          }
+                          disabled={item.quantity === 1}
+                        >
+                          <i className="fas fa-minus-circle"></i>
+                        </Button>{' '}
+                        <span>{item.quantity}</span>{' '}
+                        <Button
+                          variant="light"
+                          onClick={() =>
+                            updateCartHandler(item, item.quantity + 1)
+                          }
+                          disabled={item.quantity === item.countInStock}
+                        >
+                          <i className="fas fa-plus-circle"></i>
+                        </Button>{' '}
+                      </Col>
+                      <Col md={3}> ${item.price}</Col>
+                      <Col md={1}>
+                        <Button
+                          variant="light"
+                          onClick={() => removeItemHandler(item)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </Button>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item key={item._id}>
+                    <Row className="align-items-center">
+                      <Col md={5}>
+                        <Link to={`/decklist/${item._id}`}>{item.name}</Link>
+                      </Col>
+                      <Col md={3}></Col>
+                      <Col md={3}> ${item.price}</Col>
+                      <Col md={1}>
+                        <Button
+                          variant="light"
+                          onClick={() => removeItemHandler(item)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </Button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Accordion defaultActiveKey="0">
+                        <Accordion.Item eventKey="0">
+                          <Accordion.Header> Card List</Accordion.Header>
+                          <Accordion.Body>
+                            <Table>
+                              <thead>
+                                <tr>
+                                  <th>Name</th>
+                                  <th>Price</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <>
+                                  {item.mainDeck.map((card, index) => (
+                                    <tr key={index} data-rowid={card.slug}>
+                                      <td>
+                                        <Link to={`/product/${card.slug}`}>
+                                          {card.name}
+                                        </Link>
+                                      </td>
+                                      <td>${item.mdPrices[index]}</td>
+                                    </tr>
+                                  ))}
+                                </>
+                                <>
+                                  {item.extraDeck.map((card, index) => (
+                                    <tr key={index} data-rowid={card.slug}>
+                                      <td>
+                                        <Link to={`/product/${card.slug}`}>
+                                          {card.name}
+                                        </Link>
+                                      </td>
+                                      <td>${item.edPrices[index]}</td>
+                                    </tr>
+                                  ))}
+                                </>
+                              </tbody>
+                            </Table>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      </Accordion>
+                    </Row>
+                  </ListGroup.Item>
+                )
+              )}
             </ListGroup>
           )}
         </Col>

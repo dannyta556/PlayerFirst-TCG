@@ -5,7 +5,7 @@
 node_modules
 /.pnp
 .pnp.js
-
+public/images
 # testing
 /coverage
 

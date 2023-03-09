@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
 import { Store } from '../Store';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 
 function Product(props) {
@@ -34,7 +34,7 @@ function Product(props) {
     <Card border="dark">
       <Link to={`/product/${product.slug}`}>
         <img
-          src={product.card_images[0].image_url}
+          src={`/images/${product.name.replace(/ /g, '_')}.jpg`}
           className="card-img-top"
           alt={product.name}
         />

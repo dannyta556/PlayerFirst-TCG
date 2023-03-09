@@ -1,6 +1,7 @@
 import express from 'express';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
+import Decklist from '../models/decklistModel.js';
 import data from '../data.js';
 import slugify from 'slugify';
 
@@ -43,6 +44,8 @@ seedRouter.get('/', async (req, res) => {
       },
     }
   );
+  await Decklist.remove({});
+  await Decklist.insertMany(data.decklists);
 
   await User.remove({});
   const createdUsers = await User.insertMany(data.users);

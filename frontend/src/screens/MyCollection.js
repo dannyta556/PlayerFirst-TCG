@@ -118,9 +118,7 @@ function MyCollection() {
           slug,
           email,
         })
-        .then((response) => {
-          console.log(response.data);
-        })
+        .then((response) => {})
         .catch((err) => {
           toast.error(getError(err));
         });
@@ -131,9 +129,7 @@ function MyCollection() {
           slug,
           email,
         })
-        .then((response) => {
-          console.log(response.data);
-        })
+        .then((response) => {})
         .catch((err) => {
           toast.error(getError(err));
         });
@@ -244,7 +240,14 @@ function MyCollection() {
                 <>
                   {cardCollection.map((card) => (
                     <tr key={card.slug} data-rowid={card.slug}>
-                      <td></td>
+                      <td>
+                        {' '}
+                        <img
+                          src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
+                          alt={card.name}
+                          className="img-fluid rounded img-thumbnail"
+                        ></img>
+                      </td>
                       <td>{card.name}</td>
                       <td>{card.count}</td>
                       <td>
@@ -421,7 +424,7 @@ function MyCollection() {
                     products.map((card) => (
                       <Col sm={3} key={card._id}>
                         <img
-                          src={card.card_images[0].image_url}
+                          src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"
                           onClick={() =>

@@ -7,6 +7,7 @@ import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import articleRouter from './routes/articleRoutes.js';
+import decklistRouter from './routes/decklistRoutes.js';
 
 // loads variable from .env file
 dotenv.config();
@@ -40,6 +41,8 @@ app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 
 app.use('/api/articles', articleRouter);
+
+app.use('/api/decklists', decklistRouter);
 
 // error handler for express
 app.use((err, req, res, next) => {

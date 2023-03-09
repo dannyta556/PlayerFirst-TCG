@@ -160,6 +160,18 @@ productRouter.get(
 );
 
 productRouter.get(
+  '/price/:slug',
+  expressAsyncHandler(async (req, res) => {
+    const product = await Product.findOne({ slug: req.params.slug });
+    if (product) {
+      res.send({ price: product.price });
+    } else {
+      res.status(404).send({ message: 'Product not found' });
+    }
+  })
+);
+
+productRouter.get(
   '/categories',
   expressAsyncHandler(async (req, res) => {
     const categories = await Product.find().distinct('category');

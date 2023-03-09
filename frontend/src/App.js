@@ -32,6 +32,8 @@ import MyCollection from './screens/MyCollection';
 import DecklistsScreen from './screens/DecklistsScreen';
 import DecksScreen from './screens/DecksScreen';
 import CreateDeckScreen from './screens/CreateDeckScreen';
+import DecklistScreen from './screens/DecklistScreen';
+import UserDecklistsScreen from './screens/UserDecklistsScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -132,13 +134,20 @@ function App() {
                     </Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Link to="/decklists" className="nav-link">
-                      Decklists
-                    </Link>
+                    <NavDropdown id="nav-dropdown-decklists" title="Decklists">
+                      <LinkContainer to="/decklists/user">
+                        <NavDropdown.Item>User Decklists</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/decklists/tournament">
+                        <NavDropdown.Item>
+                          Tournament Decklists
+                        </NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
                   </Nav.Item>
                   <Nav.Item>
                     <Link to="/mydecks" className="nav-link">
-                      Deck Builder
+                      My Decks
                     </Link>
                   </Nav.Item>
                   <Nav.Item>
@@ -167,9 +176,21 @@ function App() {
               <Route path="/guides" element={<GuidesScreen />} />
               <Route path="/articles" element={<ArticlesScreen />} />
               <Route path="/articles/:slug" element={<ArticleScreen />} />
-              <Route path="/decklists" element={<DecklistsScreen />} />
-              <Route path="/mydecks" element={<DecksScreen />} />
-              <Route path="/newDeck" element={<CreateDeckScreen />} />
+              <Route
+                path="/decklists/tournament"
+                element={<DecklistsScreen />}
+              />
+              <Route path="/decklists/user" element={<UserDecklistsScreen />} />
+              <Route path="/decklist/:id" element={<DecklistScreen />} />
+              <Route
+                path="/mydecks"
+                element={
+                  <ProtectedRoute>
+                    <DecksScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/editDeck/:id" element={<CreateDeckScreen />} />
               <Route
                 path="/myCollection"
                 element={

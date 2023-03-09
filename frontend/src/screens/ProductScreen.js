@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useContext, useEffect, useReducer } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -31,7 +31,7 @@ function ProductScreen() {
   const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
-
+  const [imageName, setImageName] = useState('');
   const [{ loading, error, product }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
@@ -42,6 +42,7 @@ function ProductScreen() {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
         const result = await axios.get(`/api/products/slug/${slug}`);
+        setImageName(result.data.name.replace(/ /g, '_'));
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
@@ -56,6 +57,7 @@ function ProductScreen() {
   // It checks if first the item exists, and then if the quantity of the product is valid for the item to be added
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart } = state;
+
   const addToCartHandler = async () => {
     const existItem = cart.cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
@@ -83,7 +85,8 @@ function ProductScreen() {
         <Col md={6}>
           <img
             className="img-large"
-            src={product.card_images[0].image_url}
+            //product.card_images[0].image_url frontend\public\cardIMG\1st Movement Solo.jpg
+            src={`/images/${imageName}.jpg`}
             alt={product.name}
           ></img>
         </Col>

@@ -31,12 +31,153 @@ const data = {
       deckIDs: [],
     },
   ],
+  decklists: [
+    {
+      name: 'Fur Hire',
+      duelist: 'Allen Vera',
+      date: 'December 2022',
+      tournament: 'Regional - Madison Wisconsin',
+      archetype: 'Fur Hire',
+      placement: '5th Place',
+      mainDeck: [
+        {
+          name: 'Ash Blossom & Joyous Spring',
+          slug: 'ash-blossom-and-joyous-spring',
+          count: 3,
+        },
+        {
+          name: 'Beat, Bladesman Fur Hire',
+          slug: 'beat-bladesman-fur-hire',
+          count: 3,
+        },
+        {
+          name: 'Bystial Druiswurm',
+          slug: 'bystial-druuiswurm',
+          count: 2,
+        },
+        {
+          name: 'Bystial Magnamhut',
+          slug: 'bystial-magnamhut',
+          count: 3,
+        },
+        {
+          name: 'Bystial Saronir',
+          slug: 'bystial-saronir',
+          count: 1,
+        },
+        {
+          name: 'Donpa, Marksman Fur Hire',
+          slug: 'donpa-marksman-fur-hire',
+          count: 1,
+        },
+        {
+          name: 'Dyna, Hero Fur Hire',
+          slug: 'dyna-hero-fur-hire',
+          count: 1,
+        },
+        {
+          name: 'Filo, Messenger Fur Hire',
+          slug: 'filo-messenger-fur-hire',
+          count: 3,
+        },
+        {
+          name: 'Ghost Belle & Haunted Mansion',
+          slug: 'ghost-belle-and-haunted-mansion',
+          count: 2,
+        },
+        {
+          name: 'Rafale, Champion Fur Hire',
+          slug: 'rafale-champion-fur-hire',
+          count: 2,
+        },
+        {
+          name: 'Recon, Scout Fur Hire',
+          slug: 'recon-scout-fur-hire',
+          count: 1,
+        },
+        {
+          name: 'Rex, Freight Fur Hire',
+          slug: 'rex-freight-fur-hire',
+          count: 3,
+        },
+        {
+          name: 'Seal, Strategist Fur Hire',
+          slug: 'seal-strategist-fur-hire',
+          count: 1,
+        },
+        {
+          name: 'Wiz, Sage Fur Hire',
+          slug: 'wiz-sage-fur-hire',
+          count: 1,
+        },
+        {
+          name: 'Mayhem Fur Hire',
+          slug: 'mayhem-fur-hire',
+          count: 2,
+        },
+        {
+          name: 'One for One',
+          slug: 'one-for-one',
+          count: 1,
+        },
+        {
+          name: 'Pot of Prosperity',
+          slug: 'pot-of-prosperity',
+          count: 3,
+        },
+        {
+          name: 'Reinforcement of the Army',
+          slug: 'reinforcement-of-the-army',
+          count: 1,
+        },
+        {
+          name: 'Rookie Fur Hire',
+          slug: 'rookie-fur-hire',
+          count: 3,
+        },
+        {
+          name: 'Infinite Impermanence',
+          slug: 'infinite-impermanence',
+          count: 3,
+        },
+      ],
+      extraDeck: [
+        {
+          name: 'Accesscode Talker',
+          slug: 'accesscode-talker',
+          count: 1,
+        },
+        {
+          name: 'Apollousa, Bow of the Goddess',
+          slug: 'apollusa-bow-of-the-goddess',
+          count: 1,
+        },
+        {
+          name: 'Dharc the Dark Charmer, Gloomy',
+          slug: 'dharc-the-dark-charmer-gloomy',
+          count: 1,
+        },
+        {
+          name: 'Donner, Dagger Fur Hire',
+          slug: 'donner-dagger-fur-hire',
+          count: 2,
+        },
+      ],
+      sideDeck: [
+        {
+          name: 'D.D. Crow',
+          slug: 'd.d.-crow',
+          count: 3,
+        },
+      ],
+    },
+  ],
   products: [
     {
       name: 'Ash Blossom & Joyous Spring',
-      type: 'tuner monster',
-      race: 'zombie',
-      attribute: 'fire',
+      type: 'Tuner Monster',
+      race: 'Zombie',
+      attribute: 'FIRE',
       level: 3,
       atk: 0,
       def: 1800,
@@ -108,7 +249,7 @@ You can only use this effect of "Ash Blossom & Joyous Spring" once per turn.`,
     },
     {
       name: 'Despian Quaertis',
-      type: 'Fusion monster',
+      type: 'Fusion Monster',
       atk: 2500,
       def: 2500,
       race: 'Fiend',

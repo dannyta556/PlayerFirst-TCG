@@ -183,4 +183,26 @@ userRouter.put(
     }
   })
 );
+
+userRouter.post(
+  '/addDeck',
+  expressAsyncHandler(async (req, res) => {
+    const email = req.body.email;
+    const id = req.body.deck;
+
+    const response = await User.findOneAndUpdate(
+      {
+        email: email,
+      },
+      {
+        $push: {
+          deckIDs: id,
+        },
+      }
+    );
+    if (response) {
+      res.send(response);
+    }
+  })
+);
 export default userRouter;
