@@ -113,6 +113,7 @@ export default function CartScreen() {
                         </Button>
                       </Col>
                     </Row>
+                    <br></br>
                     <Row>
                       <Accordion defaultActiveKey="0">
                         <Accordion.Item eventKey="0">

@@ -3,12 +3,12 @@ import slugify from 'slugify';
 
 const productSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
-    slug: { type: String, unique: true, required: true },
+    name: { type: String, default: 'default', required: true },
+    slug: { type: String, required: true, unique: true },
     price: { type: Number },
     brand: { type: String, required: false },
     category: { type: String, required: false },
-    desc: { type: String, required: true },
+    desc: { type: String, default: 'default', required: true },
     countInStock: { type: Number, required: false },
     rating: { type: Number, required: false },
     numReviews: { type: Number, required: false },
@@ -34,7 +34,12 @@ productSchema.pre('validate', function (next) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   if (this.card_prices) {
-    this.price = parseFloat(this.card_prices[0].cardmarket_price);
+    //this.price = parseFloat(this.card_prices[0].cardmarket_price);
+    if (this.card_prices.length > 0) {
+      this.price = parseFloat(Object.values(this.card_prices[0]));
+    } else {
+      this.price = 1.0;
+    }
   }
   next();
 });

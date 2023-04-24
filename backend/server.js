@@ -1,5 +1,4 @@
 import express from 'express';
-import data from './data.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import seedRouter from './routes/seedRoutes.js';
@@ -8,6 +7,7 @@ import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import articleRouter from './routes/articleRoutes.js';
 import decklistRouter from './routes/decklistRoutes.js';
+import recommendationRouter from './routes/recommendationRoutes.js';
 
 // loads variable from .env file
 dotenv.config();
@@ -43,6 +43,8 @@ app.use('/api/orders', orderRouter);
 app.use('/api/articles', articleRouter);
 
 app.use('/api/decklists', decklistRouter);
+
+app.use('/api/recommendations', recommendationRouter);
 
 // error handler for express
 app.use((err, req, res, next) => {

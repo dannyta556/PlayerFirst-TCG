@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useContext,
-  useRef,
-} from 'react';
+import React, { useState, useEffect, useReducer, useContext } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
@@ -20,7 +14,7 @@ import { Store } from '../Store';
 import { getError } from '../utils';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { LinkContainer } from 'react-router-bootstrap';
+import Stack from 'react-bootstrap/esm/Stack';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -59,11 +53,6 @@ function MyCollection() {
 
   const [refreshKey, setRefeshKey] = useState(0);
 
-  const cardData = useRef(null);
-  const currentPage = useRef(1);
-  const totalPages = useRef(1);
-  const totalCards = useRef(0);
-
   //const [cardData, setCardData] = useState([]);
   const [products, setProducts] = useState(null);
   const [page, setPage] = useState(1);
@@ -76,22 +65,21 @@ function MyCollection() {
   const [previewDesc, setPreviewDesc] = useState('');
   const [previewSlug, setPreviewSlug] = useState('');
 
-  const submitSearch = async (e) => {
+  const submitSearch = async (e, newPage) => {
     e.preventDefault();
+    let currentPage = '';
+    if (newPage) {
+      currentPage = newPage;
+    }
     try {
       const searchData = await axios.get(
-        `api/products/cardSearch?page=${page}&query=${search}&cardType=${selectionType}&attribute=${selectionAttribute}&atk=${attack}&def=${defense}&level=${lvl}`
+        `api/products/cardSearch?page=${currentPage}&query=${search}&cardType=${selectionType}&attribute=${selectionAttribute}&atk=${attack}&def=${defense}&level=${lvl}`
       );
 
-      cardData.current = searchData.data.products;
-      currentPage.current = searchData.data.page;
-      totalPages.current = searchData.data.pages;
-      totalCards.current = searchData.data.countProducts;
-
-      setProducts(cardData.current);
-      setPage(currentPage.current);
-      setPages(totalPages.current);
-      setCardCount(totalCards.current);
+      setProducts(searchData.data.products);
+      setPage(searchData.data.page);
+      setPages(searchData.data.pages);
+      setCardCount(searchData.data.countProducts);
     } catch (err) {
       toast.error(err);
     }
@@ -100,14 +88,21 @@ function MyCollection() {
 
     */
   };
-  const switchView = (name, desc, slug) => {
-    if (cardPreview === 1) {
-      setCardPreview(0);
-    } else {
+  const switchView = (name, desc, slug, onCard) => {
+    if (onCard) {
       setCardPreview(1);
       setPreviewDesc(desc);
       setPreviewName(name);
       setPreviewSlug(slug);
+    } else {
+      if (cardPreview === 0) {
+        setCardPreview(1);
+        setPreviewDesc(desc);
+        setPreviewName(name);
+        setPreviewSlug(slug);
+      } else {
+        setCardPreview(0);
+      }
     }
   };
 
@@ -274,7 +269,7 @@ function MyCollection() {
         <Col md={4}>
           <Container className="search-box">
             {cardPreview === 0 ? (
-              <>
+              <div className="search-form">
                 <Row>
                   <Col>
                     <br></br>
@@ -404,16 +399,32 @@ function MyCollection() {
                     </Row>
                   </Form>
                 </Row>
-              </>
+              </div>
             ) : (
-              <div>
-                <h4>{previewName}</h4>
-                <p>{previewDesc}</p>
-                <Button onClick={switchView}> Back to Search</Button>
-                <Button onClick={() => addCard(previewName, previewSlug)}>
-                  {' '}
-                  Add card
-                </Button>
+              <div className="search-form">
+                <Row>
+                  <Col md={4}>
+                    <br></br>
+                    <img
+                      src={`/images/${previewName
+                        .replace(/:/g, '')
+                        .replace(/ /g, '_')}.jpg`}
+                      alt={previewName}
+                      className=" rounded card-preview"
+                    ></img>
+                  </Col>
+                  <Col md={8}>
+                    <h4 className="card-name">{previewName}</h4>
+                    <p className="description">{previewDesc}</p>
+                    <Stack direction="horizontal" gap={2}>
+                      <Button onClick={switchView}> Back to Search</Button>
+                      <Button onClick={() => addCard(previewName, previewSlug)}>
+                        {' '}
+                        Add card
+                      </Button>
+                    </Stack>
+                  </Col>
+                </Row>
               </div>
             )}
 
@@ -424,11 +435,13 @@ function MyCollection() {
                     products.map((card) => (
                       <Col sm={3} key={card._id}>
                         <img
-                          src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
+                          src={`/images/${card.name
+                            .replace(/ /g, '_')
+                            .replace(/:/g, '')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"
                           onClick={() =>
-                            switchView(card.name, card.desc, card.slug)
+                            switchView(card.name, card.desc, card.slug, true)
                           }
                         ></img>
                       </Col>
@@ -437,29 +450,23 @@ function MyCollection() {
                     <></>
                   )}
                 </Row>
-                <div>
-                  {products !== null ? (
-                    [...Array(pages).keys()].map((x) => (
-                      <LinkContainer
-                        key={x + 1}
-                        className="mx+1"
-                        to={{
-                          pathname: '/searchCards',
-                        }}
-                      >
-                        <Button
-                          className={Number(page) === x + 1 ? 'text-bold' : ''}
-                          variant="light"
-                        >
-                          {x + 1}
-                        </Button>
-                      </LinkContainer>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </div>
               </Container>
+              <div>
+                {products !== null ? (
+                  [...Array(pages).keys()].map((x) => (
+                    <Button
+                      className={Number(page) === x + 1 ? 'text-bold' : ''}
+                      variant="light"
+                      key={x}
+                      onClick={(e) => submitSearch(e, x + 1)}
+                    >
+                      {x + 1}
+                    </Button>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </div>
             </Row>
           </Container>
         </Col>

@@ -6,11 +6,13 @@ import { isAuth, isAdmin } from '../utils.js';
 const productRouter = express.Router();
 
 productRouter.get('/', async (req, res) => {
-  const products = await Product.find().limit(4);
+  const products = await Product.find({
+    name: { $regex: 'Tearlament', $options: 'i' },
+  }).limit(4);
   res.send(products);
 });
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 9;
 
 productRouter.get(
   '/search',
@@ -19,7 +21,6 @@ productRouter.get(
     const pageSize = query.pageSize || PAGE_SIZE;
     const page = query.page || 1;
     const category = query.category || '';
-    const brand = query.brand || '';
     const price = query.price || '';
     const rating = query.rating || '';
     const order = query.order || '';
@@ -85,12 +86,18 @@ productRouter.get(
       ...priceFilter,
       ...ratingFilter,
     });
+    let returnpages = 0;
+    if (Math.ceil(countProducts / pageSize) > 20) {
+      returnpages = 20;
+    } else {
+      returnpages = Math.ceil(countProducts / pageSize);
+    }
 
     res.send({
       products,
       countProducts,
       page,
-      pages: Math.ceil(countProducts / pageSize),
+      pages: returnpages,
     });
   })
 );
@@ -149,12 +156,17 @@ productRouter.get(
       ...atkFilter,
       ...defFilter,
     });
-
+    let returnpages = 0;
+    if (Math.ceil(countProducts / pageSize) > 10) {
+      returnpages = 10;
+    } else {
+      returnpages = Math.ceil(countProducts / pageSize);
+    }
     res.send({
       products,
       countProducts,
       page,
-      pages: Math.ceil(countProducts / pageSize),
+      pages: returnpages,
     });
   })
 );
@@ -211,6 +223,16 @@ productRouter.get('/name/:name', async (req, res) => {
     res.send(product);
   } else {
     res.status(404).send({ message: 'Product not found' });
+  }
+});
+
+productRouter.get('/description/:slug', async (req, res) => {
+  const product = await Product.findOne({ slug: req.params.slug });
+  console.log(product);
+  if (product) {
+    res.send(product.desc);
+  } else {
+    res.send('');
   }
 });
 

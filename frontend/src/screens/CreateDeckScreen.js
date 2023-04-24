@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useContext,
-  useRef,
-} from 'react';
+import React, { useState, useEffect, useReducer, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -13,13 +7,13 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
-import { LinkContainer } from 'react-router-bootstrap';
+import Carousel from 'react-elastic-carousel';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Store } from '../Store';
 import { getError } from '../utils';
 import Stack from 'react-bootstrap/Stack';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 
@@ -36,14 +30,22 @@ const reducer = (state, action) => {
   }
 };
 
+const breakPoints = [
+  { width: 1, itemsToShow: 2 },
+  { width: 550, itemsToShow: 3 },
+  { width: 800, itemsToShow: 4 },
+  { width: 1200, itemsToShow: 5 },
+];
+
 export default function CreateDeckScreen() {
+  const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
 
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const email = userInfo.email;
+  const email = userInfo.email || '';
 
   const [search, setSearch] = useState('');
   const [lvl, setLvl] = useState('');
@@ -54,7 +56,8 @@ export default function CreateDeckScreen() {
   const [defense, setDefense] = useState('');
   const [selectionAttribute, setSelectionAttribute] = useState('');
   const [attribute, setAttribute] = useState([]);
-
+  const [archetypes, setArchetypes] = useState([]);
+  const [deckArchetype, setDeckArchetype] = useState('');
   const [{ loading, error, decklist }, dispatch] = useReducer(reducer, {
     decklist: [],
     loading: true,
@@ -62,10 +65,6 @@ export default function CreateDeckScreen() {
   });
 
   const [refreshKey, setRefeshKey] = useState(0);
-
-  const cardData = useRef(null);
-  const currentPage = useRef(1);
-  const totalPages = useRef(1);
 
   const [products, setProducts] = useState(null);
   const [page, setPage] = useState(1);
@@ -82,6 +81,13 @@ export default function CreateDeckScreen() {
   const [totalPrice, setTotalPrice] = useState(0.0);
   const [yourPrice, setYourPrice] = useState(0.0);
 
+  // deck owned cards
+  const [mainOwnedCards, setMainOwnedCards] = useState([]);
+  const [extraOwnedCards, setExtraOwnedCards] = useState([]);
+
+  // card recommendations
+  const [cardRecommendation, setCardRecommendation] = useState([]);
+
   const changeName = (e) => {
     if (e.keyCode === 13) {
       axios.post('/api/decklists/changeName', {
@@ -91,34 +97,60 @@ export default function CreateDeckScreen() {
       toast.success(`Deck name changed`);
     }
   };
+  const changeArchetype = async (e) => {
+    console.log('Changing name');
+    setDeckArchetype(e.target.value);
+    await axios
+      .post('/api/decklists/changeArchetype', {
+        archetype: e.target.value,
+        id: id,
+      })
+      .then((response) => {
+        toast.success(`Deck Archetype Changed`);
+      });
+  };
 
+  const getDescription = async (slug) => {
+    const desc = await axios.get(`/api/products/description/${slug}`);
+    let returnData = desc.data;
+    setPreviewDesc(returnData);
+  };
   const switchView = (name, desc, slug, type, inDeck) => {
-    if (cardPreview === 1) {
-      setCardPreview(0);
-    } else {
+    getDescription(slug);
+    if (inDeck) {
       setCardPreview(1);
-      setPreviewDesc(desc);
+      //setPreviewDesc(newDesc.value);
       setPreviewName(name);
       setPreviewSlug(slug);
       setPreviewType(type);
+    } else {
+      if (cardPreview === 0) {
+        setCardPreview(1);
+        //setPreviewDesc(newDesc.value);
+        setPreviewName(name);
+        setPreviewSlug(slug);
+        setPreviewType(type);
+      } else {
+        setCardPreview(0);
+      }
     }
   };
-
-  const removeCard = (objID, isMainDeck) => {
-    axios
+  const removeCard = async (objID, isMainDeck) => {
+    await axios
       .post(`/api/decklists/deleteCard`, {
         id: id,
         objID: objID,
         isMainDeck: isMainDeck,
       })
-      .then((response) => {})
+      .then((response) => {
+        setRefeshKey(refreshKey + 1);
+      })
       .catch((err) => {
         toast.error(getError(err));
       });
-    setRefeshKey(refreshKey + 1);
   };
 
-  const addCard = (name, slug, type) => {
+  const addCard = async (name, slug, type) => {
     const cardType = type || '';
     if (
       cardType === 'Fusion Monster' ||
@@ -132,18 +164,24 @@ export default function CreateDeckScreen() {
       if (countInExtra + 1 > 3 || decklist.extraDeck.length >= 15) {
         toast.error('At max copies of that card');
       } else {
-        axios
-          .post(`/api/decklists/addCard`, {
-            slug,
-            name,
-            id,
-            isMainDeck: false,
-          })
-          .then((response) => {})
-          .catch((err) => {
-            toast.error(getError(err));
-          });
-        setRefeshKey(refreshKey + 1);
+        try {
+          await axios
+            .post(`/api/decklists/addCard`, {
+              slug,
+              name,
+              id,
+              isMainDeck: false,
+            })
+            .then((response) => {
+              console.log('Got response');
+              setRefeshKey(refreshKey + 1);
+            })
+            .catch((err) => {
+              toast.error(getError(err));
+            });
+        } catch (err) {
+          toast.error(getError);
+        }
       }
     } else {
       const countInMain = decklist.mainDeck.filter(
@@ -152,38 +190,56 @@ export default function CreateDeckScreen() {
       if (countInMain + 1 > 3 || decklist.mainDeck.length >= 60) {
         toast.error('At max copies of that card');
       } else {
-        axios
-          .post(`/api/decklists/addCard`, {
-            slug,
-            name,
-            id,
-            isMainDeck: true,
-          })
-          .then((response) => {})
-          .catch((err) => {
-            toast.error(getError(err));
-          });
-        setRefeshKey(refreshKey + 1);
+        try {
+          await axios
+            .post(`/api/decklists/addCard`, {
+              slug,
+              name,
+              id,
+              isMainDeck: true,
+            })
+            .then((response) => {
+              console.log('Got response');
+              setRefeshKey(refreshKey + 1);
+            })
+            .catch((err) => {
+              toast.error(getError(err));
+            });
+        } catch (err) {
+          toast.error(getError(err));
+        }
       }
     }
   };
 
-  const submitSearch = async (e) => {
+  const submitSearch = async (e, newPage) => {
     e.preventDefault();
+    let currentPage = '';
+    if (newPage) {
+      currentPage = newPage;
+    }
     try {
       const searchData = await axios.get(
-        `/api/products/cardSearch?page=${page}&query=${search}&cardType=${selectionType}&attribute=${selectionAttribute}&atk=${attack}&def=${defense}&level=${lvl}`
+        `/api/products/cardSearch?page=${currentPage}&query=${search}&cardType=${selectionType}&attribute=${selectionAttribute}&atk=${attack}&def=${defense}&level=${lvl}`
       );
-
-      cardData.current = searchData.data.products;
-      currentPage.current = searchData.data.page;
-      totalPages.current = searchData.data.pages;
-
-      setProducts(cardData.current);
-      setPage(currentPage.current);
-      setPages(totalPages.current);
+      setProducts(searchData.data.products);
+      setPage(searchData.data.page);
+      setPages(searchData.data.pages);
     } catch (err) {
       toast.error(err);
+    }
+  };
+
+  const getRecs = async (e) => {
+    e.preventDefault();
+    console.log(previewSlug);
+    try {
+      const result = await axios.get(
+        `/api/recommendations/card/${previewSlug}`
+      );
+      setCardRecommendation(result.data.recommendations);
+    } catch (err) {
+      toast.error(getError(err));
     }
   };
 
@@ -192,25 +248,12 @@ export default function CreateDeckScreen() {
     verify that the current user is the one that owns this decklist
     if not redirect the user
   */
-  useEffect(() => {
-    const fetchData = async () => {
-      dispatch({ type: 'FETCH_REQUEST' });
-      try {
-        const result = await axios.get(`/api/decklists/${id}`);
-        let totalPrice = 0.0;
-        const data = await axios.get(
-          `/api/decklists/price?id=${id}&email=${email}`
-        );
 
-        totalPrice = data.data.totalPrice;
-        setTotalPrice(totalPrice);
-        setYourPrice(data.data.yourPrice);
-        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-      } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
-      }
-    };
-    fetchData();
+  useEffect(() => {
+    if (userInfo === null) {
+      navigate('/login');
+    }
+
     const fetchCategories = async () => {
       try {
         const { data } = await axios.get(`/api/products/cardTypes`);
@@ -229,7 +272,45 @@ export default function CreateDeckScreen() {
       }
     };
     fetchAttributes();
-  }, [id, email, refreshKey]);
+    const fetchArchetypes = async () => {
+      try {
+        const { data } = await axios.get(`/api/decklists/archetypes`);
+        setArchetypes(data);
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
+    fetchArchetypes();
+  }, [id, email, userInfo, navigate]);
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch({ type: 'FETCH_REQUEST' });
+      try {
+        const result = await axios.get(`/api/decklists/${id}`);
+        if (userInfo.email !== result.data.userEmail) {
+          navigate('/login');
+        }
+        let totalPrice = 0.0;
+        const data = await axios.get(
+          `/api/decklists/price?id=${id}&email=${email}`
+        );
+
+        const ownData = await axios.get(
+          `/api/decklists/ownedCards?id=${id}&email=${email}`
+        );
+        totalPrice = data.data.totalPrice;
+        setTotalPrice(totalPrice);
+        setYourPrice(data.data.yourPrice);
+        setMainOwnedCards(ownData.data.mainOwned);
+        setExtraOwnedCards(ownData.data.extraOwned);
+        setDeckArchetype(result.data.archetype);
+        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+      } catch (err) {
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+      }
+    };
+    fetchData();
+  }, [email, id, refreshKey, navigate, userInfo.email]);
   /*
   useEffect(() => {
     const handleContextMenu = (e) => {
@@ -241,100 +322,129 @@ export default function CreateDeckScreen() {
     };
   }, []);
 */
-  return loading ? (
-    <LoadingBox />
-  ) : error ? (
-    <MessageBox variant="danger">{error}</MessageBox>
-  ) : (
+  return (
     <div>
       <Helmet>
-        <title>New Deck</title>
+        <title>Edit Deck</title>
       </Helmet>
 
       <Stack direction="horizontal" gap={3}>
         <InputGroup className="mb-3">
           <InputGroup.Text>Deck Name:</InputGroup.Text>
           <Form.Control
-            defaultValue={decklist.name || 'New Deck'}
+            defaultValue={decklist.name}
             aria-label="Deckname"
             onKeyDown={(e) => changeName(e)}
             maxLength={64}
           ></Form.Control>
         </InputGroup>
       </Stack>
+      <Stack direction="horizontal" gap={3}>
+        <InputGroup className="mb-3">
+          <InputGroup.Text>Archetype:</InputGroup.Text>
+          <Form.Select
+            value={deckArchetype || ''}
+            aria-label="archetype"
+            onChange={(e) => changeArchetype(e)}
+          >
+            {archetypes.map((archetype) => (
+              <option key={archetype}>{archetype}</option>
+            ))}
+            <option>other</option>
+          </Form.Select>
+        </InputGroup>
+      </Stack>
       <p>Press Enter to save changes to name</p>
+      <a href="/help/deckBuilder" target="_blank">
+        Help
+      </a>
       <br></br>
-
       <Row>
-        <Col md={8}>
-          <Stack direction="horizontal" gap={3}>
-            <div>Main Deck</div>
-            <div className="ms-auto">Total Price: ${totalPrice}</div>
-            <div>Your Price: ${yourPrice} </div>
-          </Stack>
-          <Container className="deck-collection main-deck">
-            <Row md={10}>
-              {decklist !== null ? (
-                decklist.mainDeck.map((card, index) => (
-                  <Col md={1} key={card.objID}>
-                    <img
-                      src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
-                      alt={card.name}
-                      className="img-fluid"
-                      onClick={() =>
-                        switchView(
-                          card.name,
-                          card.desc,
-                          card.slug,
-                          card.type,
-                          true
-                        )
-                      }
-                      onContextMenu={() => removeCard(card.objID, true)}
-                    ></img>
-                  </Col>
-                ))
-              ) : (
-                <></>
-              )}
-            </Row>
-          </Container>
-          <br></br>
-          <Stack direction="horizontal">
-            <div>Extra Deck</div>
-          </Stack>
-          <Container className="deck-collection extra-deck">
-            <Row>
-              {decklist !== null ? (
-                decklist.extraDeck.map((card, index) => (
-                  <Col sm={1} key={card.slug + index}>
-                    <img
-                      src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
-                      alt={card.name}
-                      className="img-fluid"
-                      onClick={() =>
-                        switchView(
-                          card.name,
-                          card.desc,
-                          card.slug,
-                          card.type,
-                          true
-                        )
-                      }
-                      onContextMenu={() => removeCard(card.objID, false)}
-                    ></img>
-                  </Col>
-                ))
-              ) : (
-                <></>
-              )}
-            </Row>
-          </Container>
-        </Col>
+        {loading ? (
+          <LoadingBox />
+        ) : error ? (
+          <MessageBox variant="danger">{error}</MessageBox>
+        ) : (
+          <Col md={8}>
+            <Stack direction="horizontal" gap={3}>
+              <div>Main Deck - {decklist.mainDeck.length} cards</div>
+              <div className="ms-auto">Total Price: ${totalPrice}</div>
+              <div>Your Price: ${yourPrice} </div>
+            </Stack>
+            <Container className="deck-collection main-deck">
+              <Row md={10}>
+                {decklist !== null ? (
+                  decklist.mainDeck.map((card, index) => (
+                    <Col md={1} key={card.objID}>
+                      <img
+                        src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
+                        alt={card.name}
+                        className={
+                          mainOwnedCards[index] === 1
+                            ? 'img-fluid card-display'
+                            : 'img-fluid not-owned card-display'
+                        }
+                        onClick={() =>
+                          switchView(
+                            card.name,
+                            card.desc,
+                            card.slug,
+                            card.type,
+                            true
+                          )
+                        }
+                        onContextMenu={() => removeCard(card.objID, true)}
+                      ></img>
+                    </Col>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </Row>
+            </Container>
+            <br></br>
+            <Stack direction="horizontal">
+              <div>Extra Deck - {decklist.extraDeck.length} cards</div>
+            </Stack>
+            <Container className="deck-collection extra-deck">
+              <Row>
+                {decklist !== null ? (
+                  decklist.extraDeck.map((card, index) => (
+                    <Col sm={1} key={card.slug + index}>
+                      <img
+                        src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
+                        alt={card.name}
+                        className={
+                          extraOwnedCards[index] === 1
+                            ? 'img-fluid card-display in-deck'
+                            : 'img-fluid card-display not-owned'
+                        }
+                        onClick={() =>
+                          switchView(
+                            card.name,
+                            card.desc,
+                            card.slug,
+                            card.type,
+                            true
+                          )
+                        }
+                        onContextMenu={() => removeCard(card.objID, false)}
+                      ></img>
+                    </Col>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </Row>
+            </Container>
+          </Col>
+        )}
+
         <Col md={4}>
+          <br></br>
           <Container className="search-box">
             {cardPreview === 0 ? (
-              <>
+              <div className="search-form">
                 <Row>
                   <Col>
                     <br></br>
@@ -464,14 +574,16 @@ export default function CreateDeckScreen() {
                     </Row>
                   </Form>
                 </Row>
-              </>
+              </div>
             ) : (
-              <div>
+              <div className="search-form">
                 <Row>
                   <Col md={4}>
                     <br></br>
                     <img
-                      src={`/images/${previewName.replace(/ /g, '_')}.jpg`}
+                      src={`/images/${previewName
+                        .replace(/:/g, '')
+                        .replace(/ /g, '_')}.jpg`}
                       alt={previewName}
                       className=" rounded card-preview"
                     ></img>
@@ -479,6 +591,7 @@ export default function CreateDeckScreen() {
                   <Col md={8}>
                     <h5 className="card-name">{previewName}</h5>
                     <p className="description">{previewDesc || ''}</p>
+
                     <Stack direction="horizontal" gap={2}>
                       <Button className="preview-btns" onClick={switchView}>
                         {' '}
@@ -505,7 +618,9 @@ export default function CreateDeckScreen() {
                     products.map((card) => (
                       <Col sm={3} key={card._id}>
                         <img
-                          src={`/images/${card.name.replace(/ /g, '_')}.jpg`}
+                          src={`/images/${card.name
+                            .replace(/ /g, '_')
+                            .replace(/:/g, '')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"
                           onClick={() =>
@@ -513,7 +628,8 @@ export default function CreateDeckScreen() {
                               card.name,
                               card.desc,
                               card.slug,
-                              card.type
+                              card.type,
+                              true
                             )
                           }
                         ></img>
@@ -523,32 +639,72 @@ export default function CreateDeckScreen() {
                     <></>
                   )}
                 </Row>
-                <div>
-                  {products !== null ? (
-                    [...Array(pages).keys()].map((x) => (
-                      <LinkContainer
-                        key={x + 1}
-                        className="mx+1"
-                        to={{
-                          pathname: '/searchCards',
-                        }}
-                      >
-                        <Button
-                          className={Number(page) === x + 1 ? 'text-bold' : ''}
-                          variant="light"
-                        >
-                          {x + 1}
-                        </Button>
-                      </LinkContainer>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </div>
               </Container>
             </Row>
+            <Row>
+              <div>
+                {products !== null ? (
+                  [...Array(pages).keys()].map((x) => (
+                    <Button
+                      className={Number(page) === x + 1 ? 'text-bold' : ''}
+                      variant="light"
+                      key={x}
+                      onClick={(e) => submitSearch(e, x + 1)}
+                    >
+                      {x + 1}
+                    </Button>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </div>
+            </Row>
           </Container>
+          <br></br>
         </Col>
+      </Row>
+      <br></br>
+      <Row>
+        <Stack direction="horizontal" gap={2}>
+          <h5>Currently Selected: {previewName}</h5>
+          {previewName !== '' ? (
+            <Button onClick={getRecs}>Get Recommendations</Button>
+          ) : (
+            <></>
+          )}{' '}
+        </Stack>
+
+        <Container className="recommend-section">
+          <br></br>
+          <Row>
+            {cardRecommendation.length !== 0 ? (
+              <Carousel breakPoints={breakPoints}>
+                {cardRecommendation.map((card, idx) => (
+                  <Col sm={1} key={idx}>
+                    <img
+                      src={`/images/${card.name
+                        .replace(/ /g, '_')
+                        .replace(/:/g, '')}.jpg`}
+                      alt={card.name}
+                      className="card-rec-img"
+                      onClick={() =>
+                        switchView(
+                          card.name,
+                          card.desc,
+                          card.slug,
+                          card.type,
+                          true
+                        )
+                      }
+                    ></img>
+                  </Col>
+                ))}
+              </Carousel>
+            ) : (
+              <></>
+            )}
+          </Row>
+        </Container>
       </Row>
     </div>
   );

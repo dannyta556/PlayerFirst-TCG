@@ -59,7 +59,7 @@ export default function UserDecklistsScreen() {
     const filterPage = filter.page || page;
     const filterArchetype = filter.archetype || archetype;
 
-    return `/decklists/tournament?archetype=${filterArchetype}&page=${filterPage}`;
+    return `/decklists/user?archetype=${filterArchetype}&page=${filterPage}`;
   };
 
   useEffect(() => {
@@ -127,17 +127,19 @@ export default function UserDecklistsScreen() {
         </Helmet>
         <Row>
           <h3>User Decklists</h3>
+          <a href="/help/decklists">Help</a>
         </Row>
+        <br></br>
         <Row>
           <Col md={3}>
             <h4>Filters</h4>
             <div>
               <h4>Archetype</h4>
-              <ul>
+              <ul className="filter-side">
                 {archetypes.map((a) => (
                   <li key={a}>
                     <Link
-                      className={a === archetype ? 'text-bold' : ''}
+                      className={a === archetype ? 'text-bold' : 'bold-link'}
                       to={getFilterUrl({ archetype: a })}
                     >
                       {a}
@@ -154,7 +156,7 @@ export default function UserDecklistsScreen() {
               <option value="oldest">Oldest Decks</option>
             </select>
             <br></br>
-            <Table striped bordered hover>
+            <Table striped="columns" bordered hover>
               <thead>
                 <tr>
                   <th>Deck</th>
@@ -167,7 +169,9 @@ export default function UserDecklistsScreen() {
                 {decklists.map((deck, index) => (
                   <tr key={deck._id}>
                     <td>
-                      <Link to={`/decklist/${deck._id}`}>{deck.name}</Link>
+                      <Link className="bold-link" to={`/decklist/${deck._id}`}>
+                        {deck.name}
+                      </Link>
                     </td>
                     <td>{deck.duelist}</td>
                     <td>{deck.archetype}</td>

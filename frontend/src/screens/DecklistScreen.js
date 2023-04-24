@@ -67,7 +67,7 @@ export default function DecklistScreen() {
       payload: {
         ...decklist,
         quantity,
-        price: totalPrice,
+        price: yourPrice,
         mdPrices: mdPrices,
         edPrices: edPrices,
       },
@@ -78,6 +78,7 @@ export default function DecklistScreen() {
   };
 
   const [totalPrice, setTotalPrice] = useState(0.0);
+  const [yourPrice, setYourPrice] = useState(0.0);
   const [mdPrices, setMDPrices] = useState([]);
   const [edPrices, setEDPrices] = useState([]);
 
@@ -87,22 +88,21 @@ export default function DecklistScreen() {
       dispatchPrice({ type: 'FETCH_REQUEST' });
       try {
         const result = await axios.get(`/api/decklists/${id}`);
-
         const data = await axios.get(
           `/api/decklists/price?id=${id}&email=${userInfo.email}`
         );
-
+        console.log(data);
         const prices = await axios.get(`/api/decklists/prices?id=${id}`);
-
+        console.log(prices);
         setMDPrices(prices.data.mainDeckPrices);
         setEDPrices(prices.data.extraDeckPrices);
         setTotalPrice(data.data.totalPrice);
-        let mainDeckP = [];
-        result.data.mainDeck.map((card) =>
-          mainDeckP.push(Math.round(10 * Math.random() * 100) / 100)
-        );
+        setYourPrice(data.data.yourPrice);
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-        dispatchPrice({ type: 'FETCH_SUCCESS', payload: mainDeckP });
+        dispatchPrice({
+          type: 'FETCH_SUCCESS',
+          payload: prices.data.mainDeckPrices,
+        });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -130,7 +130,6 @@ export default function DecklistScreen() {
       <br></br>
       <Stack direction="horizontal" gap={3}>
         <div>Archetype: {decklist.archetype}</div>
-        <div>Approval: 96%</div>
         <Button className="ms-auto" onClick={addToCartHandler}>
           Buy this deck
         </Button>
@@ -139,6 +138,7 @@ export default function DecklistScreen() {
       <Stack direction="horizontal" gap={3}>
         <div>Main Deck</div>
         <div className="ms-auto">Price: ${totalPrice}</div>
+        <div>Your Price: $ {yourPrice}</div>
       </Stack>
       <Table>
         <thead>
@@ -156,7 +156,7 @@ export default function DecklistScreen() {
                 <td>
                   <Link to={`/product/${card.slug}`}>{card.name}</Link>
                 </td>
-                <td>${mdPrices[index]}</td>
+                <td>${mdPrices[index].toFixed(2)}</td>
               </tr>
             ))}
           </>
@@ -179,7 +179,7 @@ export default function DecklistScreen() {
                 <td>
                   <Link to={`/product/${card.slug}`}>{card.name}</Link>
                 </td>
-                <td>${edPrices[index]}</td>
+                <td>${edPrices[index].toFixed(2)}</td>
               </tr>
             ))}
           </>

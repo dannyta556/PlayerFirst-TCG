@@ -13,6 +13,9 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { getError } from '../utils';
 import { Store } from '../Store';
+import { toast } from 'react-toastify';
+import Carousel from 'react-elastic-carousel';
+import Product from '../components/Product';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -27,11 +30,19 @@ const reducer = (state, action) => {
   }
 };
 
+const breakPoints = [
+  { width: 1, itemsToShow: 2 },
+  { width: 550, itemsToShow: 3 },
+  { width: 800, itemsToShow: 4 },
+  { width: 1200, itemsToShow: 5 },
+];
+
 function ProductScreen() {
   const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
   const [imageName, setImageName] = useState('');
+  const [recommendations, setRecommendations] = useState([]);
   const [{ loading, error, product }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
@@ -49,6 +60,16 @@ function ProductScreen() {
       }
     };
     fetchData();
+
+    const fetchRecs = async () => {
+      try {
+        const result = await axios.get(`/api/recommendations/card/${slug}`);
+        setRecommendations(result.data.recommendations);
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
+    fetchRecs();
   }, [slug]);
 
   // addToCartHandler
@@ -86,7 +107,9 @@ function ProductScreen() {
           <img
             className="img-large"
             //product.card_images[0].image_url frontend\public\cardIMG\1st Movement Solo.jpg
-            src={`/images/${imageName}.jpg`}
+            src={`/images/${imageName
+              .replace(/['"]/g, '')
+              .replace(/:/g, '')}.jpg`}
             alt={product.name}
           ></img>
         </Col>
@@ -97,14 +120,6 @@ function ProductScreen() {
                 <title>Kenobi's Cards - {product.name}</title>
               </Helmet>
               <h1>{product.name}</h1>
-              {product.card_set ? (
-                <>
-                  <h5>{product.card_sets[0].set_code}</h5>
-                  <h5>{product.card_sets[0].set_rarity}</h5>
-                </>
-              ) : (
-                <> </>
-              )}
             </ListGroup.Item>
             {product.category !== 'single' ? (
               <>
@@ -118,10 +133,25 @@ function ProductScreen() {
             ) : (
               <></>
             )}
-            <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
             <ListGroup.Item>
-              <strong>Type:</strong> {'  '}
-              {product.type}
+              {product.card_sets.length > 0 ? (
+                <>
+                  {product.card_sets[0].set_code} -{' '}
+                  {product.card_sets[0].set_rarity}
+                </>
+              ) : (
+                <></>
+              )}
+            </ListGroup.Item>
+            <ListGroup.Item>
+              {product.category === 'single' ? (
+                <>
+                  <strong>Type:</strong> {'  '}
+                  {product.type}
+                </>
+              ) : (
+                <></>
+              )}
               <br></br>
               <strong>Description:</strong>
               <p>{product.desc}</p>
@@ -129,7 +159,13 @@ function ProductScreen() {
                 <>
                   <strong>atk: </strong> {product.atk}
                   <br></br>
-                  <strong>def: </strong> {product.def}
+                  {product.def ? (
+                    <>
+                      <strong>def: </strong> {product.def}{' '}
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </>
               ) : (
                 <></>
@@ -144,7 +180,7 @@ function ProductScreen() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>${product.card_prices[0].cardmarket_price}</Col>
+                    <Col>${product.price}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -178,7 +214,15 @@ function ProductScreen() {
         {product.card_set ? (
           <h4>Recommended Cards</h4>
         ) : (
-          <h4>Recommended Products</h4>
+          <div>
+            <h4>Recommended Products</h4>
+            <br></br>
+            <Carousel breakPoints={breakPoints}>
+              {recommendations.map((rec, index) => (
+                <Product key={index} product={rec}></Product>
+              ))}
+            </Carousel>
+          </div>
         )}
       </Row>
     </div>

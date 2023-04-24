@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: thin;
 }
 
 .site-container {
@@ -14,8 +15,10 @@ body {
 main {
   flex: 1;
 }
+
 .card-img-top {
-  width: 150px;
+  width: 125px;
+  margin: 10px;
 }
 
 .btn-primary,
@@ -36,7 +39,7 @@ main {
 
 .product img {
   width: 100%;
-  max-width: 250px;
+  max-width: 200px;
 }
 
 .product-info {
@@ -111,10 +114,12 @@ main {
 
 .main-deck {
   height: 400px;
+  background-color: #fff1e4;
 }
 
 .extra-deck {
   height: 200px;
+  background-color: #f4defc;
 }
 
 .card-preview {
@@ -123,13 +128,138 @@ main {
 
 .card-name {
   margin-left: 15px;
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: medium;
+}
+
+.card-display {
+  padding-top: 25px;
+  transition: transform 0.2s;
+}
+.card-display:hover {
+  transform: scale(1.75);
+}
+.not-owned {
+  opacity: 50%;
 }
 
 .description {
   margin-left: 15px;
+  margin-top: 20px;
   font-size: 12px;
+  height: 150px;
+  overflow: auto;
 }
 
 .preview-btns {
   text-align: right;
+}
+
+.filter-side {
+  list-style-type: none;
+  max-height: 200px;
+  padding: 0;
+
+  overflow: auto;
+}
+
+.product-card {
+  width: 280px;
+  height: 225px;
+  border: 1px solid lightgray;
+  box-shadow: 5px 5px 5px lightgray;
+}
+
+.product-card-body {
+  margin-left: 10px;
+  padding: 0;
+}
+
+.product-card-text {
+  font-weight: lighter;
+  margin: 0;
+}
+
+.product-card-title {
+  font-size: 18px;
+  color: #000000;
+  text-decoration: none;
+}
+
+.bold-link {
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+}
+
+.search-form {
+  height: 300px;
+}
+
+.cart-deck {
+  height: 500px;
+  overflow: auto;
+}
+
+.tutorial-image {
+  max-width: 896px;
+  max-height: 414px;
+}
+.recommend-section {
+  height: 300px;
+}
+
+.card-rec-img {
+  height: 200px;
+}
+
+.rec.rec-arrow,
+.rec.rec-arrow:hover {
+  color: #4050dd;
+}
+
+button.rec-dot:active,
+button.rec-dot:focus,
+button.rec-dot:hover {
+  background-color: #4050dd;
+}
+
+.article-home {
+  height: 300px;
+  width: 700px;
+}
+.article-title {
+  text-align: center;
+}
+.carousel {
+  width: 700px;
+  height: 300px;
+  margin: auto;
+}
+
+.nav-right {
+  margin-right: 40px;
+}
+
+.nav-right.option {
+  width: 30px;
+}
+
+.link-dropdown {
+  width: 5vw;
+}
+
+.dropdown-menu {
+  min-width: 7rem;
+}
+
+.preview-img {
+  width: 100px;
+  margin: 10px;
+}
+
+.decklist-home {
+  margin: 1vw;
+  box-shadow: 5px 5px 5px lightgray;
 }

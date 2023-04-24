@@ -30,6 +30,16 @@ articleRouter.get('/', async (req, res) => {
   res.send(getArticles);
 });
 
+articleRouter.get(
+  '/guides',
+  expressAsyncHandler(async (req, res) => {
+    const getGuides = await Article.find({ type: 'guide' }).sort({
+      createdAt: 'desc',
+    });
+    res.send(getGuides);
+  })
+);
+
 // individual article page
 articleRouter.get('/:slug', async (req, res) => {
   const article = await Article.findOne({ slug: req.params.slug });

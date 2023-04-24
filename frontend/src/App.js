@@ -34,6 +34,7 @@ import DecksScreen from './screens/DecksScreen';
 import CreateDeckScreen from './screens/CreateDeckScreen';
 import DecklistScreen from './screens/DecklistScreen';
 import UserDecklistsScreen from './screens/UserDecklistsScreen';
+import HelpScreen from './screens/HelpScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -93,18 +94,16 @@ function App() {
                 </Link>
               )}
               {userInfo && userInfo.isAdmin && (
-                <NavDropdown title="Admin" id="admin-nav-dropdown">
+                <NavDropdown
+                  className="nav-right"
+                  title="Admin"
+                  id="admin-nav-dropdown"
+                >
                   <LinkContainer to="/admin/dashboard">
                     <NavDropdown.Item>Dashboard</NavDropdown.Item>
                   </LinkContainer>
-                  <LinkContainer to="/admin/productList">
-                    <NavDropdown.Item>Products</NavDropdown.Item>
-                  </LinkContainer>
                   <LinkContainer to="/admin/orderList">
                     <NavDropdown.Item>Orders</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/admin/userList">
-                    <NavDropdown.Item>Users</NavDropdown.Item>
                   </LinkContainer>
                 </NavDropdown>
               )}
@@ -175,6 +174,7 @@ function App() {
               <Route path="/signup" element={<SignUpScreen />} />
               <Route path="/guides" element={<GuidesScreen />} />
               <Route path="/articles" element={<ArticlesScreen />} />
+              <Route path="/help/:page" element={<HelpScreen />} />
               <Route path="/articles/:slug" element={<ArticleScreen />} />
               <Route
                 path="/decklists/tournament"
@@ -190,7 +190,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/editDeck/:id" element={<CreateDeckScreen />} />
+              <Route
+                path="/editDeck/:id"
+                element={
+                  <ProtectedRoute>
+                    <CreateDeckScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/myCollection"
                 element={

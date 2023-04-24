@@ -5,6 +5,7 @@ import Rating from './Rating';
 import { Store } from '../Store';
 import { useContext, useState } from 'react';
 import axios from 'axios';
+import Stack from 'react-bootstrap/esm/Stack';
 
 function Product(props) {
   const { product } = props;
@@ -31,42 +32,53 @@ function Product(props) {
   };
 
   return (
-    <Card border="dark">
-      <Link to={`/product/${product.slug}`}>
-        <img
-          src={`/images/${product.name.replace(/ /g, '_')}.jpg`}
-          className="card-img-top"
-          alt={product.name}
-        />
-      </Link>
-      <Card.Body>
+    <Card className="product-card" border="dark">
+      <Stack direction="horizontal" gap={2}>
         <Link to={`/product/${product.slug}`}>
-          <Card.Title>{product.name}</Card.Title>
+          <img
+            src={`/images/${product.name
+              .replace(/ /g, '_')
+              .replace(/["]/g, '')
+              .replace(/:/g, '')}.jpg`}
+            className="card-img-top"
+            alt={product.name}
+          />
         </Link>
-        {product.category !== 'single' ? (
-          <Rating rating={product.rating} numReviews={product.numReviews} />
-        ) : (
-          <></>
-        )}
-        {product.category === 'single' ? (
-          <>
-            <Card.Text>{product.card_sets[0].set_code}</Card.Text>
-            <Card.Text>{product.card_sets[0].set_rarity}</Card.Text>
-          </>
-        ) : (
-          <></>
-        )}
-        <Card.Text>
-          Starting At: <strong>${product.price}</strong>
-        </Card.Text>
-        {product.countInStock === 0 ? (
-          <Button variant="light" disabled>
-            Out of Stock
-          </Button>
-        ) : (
-          <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
-        )}
-      </Card.Body>
+        <Card.Body className="product-card-body">
+          <Link className="product-card-title" to={`/product/${product.slug}`}>
+            <Card.Title className="product-card-title">
+              {product.name}
+            </Card.Title>
+          </Link>
+          {product.category !== 'single' ? (
+            <Rating rating={product.rating} numReviews={product.numReviews} />
+          ) : (
+            <></>
+          )}
+          {product.category === 'single' ? (
+            <>
+              <Card.Text className="product-card-text">
+                {product.card_sets[0] ? product.card_sets[0].set_code : ''} -{' '}
+                {product.card_sets[0] ? product.card_sets[0].set_rarity : ''}
+              </Card.Text>
+            </>
+          ) : (
+            <></>
+          )}
+          <Card.Text>
+            <strong>${product.price}</strong>
+          </Card.Text>
+          {product.countInStock === 0 ? (
+            <Button variant="light" disabled>
+              Out of Stock
+            </Button>
+          ) : (
+            <Button onClick={() => addToCartHandler(product)}>
+              Add to cart
+            </Button>
+          )}
+        </Card.Body>
+      </Stack>
     </Card>
   );
 }

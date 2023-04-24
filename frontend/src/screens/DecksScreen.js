@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useContext,
-  useRef,
-} from 'react';
+import React, { useState, useEffect, useReducer, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -35,6 +29,8 @@ const reducer = (state, action) => {
 };
 
 export default function DecksScreen() {
+  const { state } = useContext(Store);
+  const { userInfo } = state;
   const navigate = useNavigate();
   const [showButtons, setShowButtons] = useState(0);
   const [currentDeck, setCurrentDeck] = useState();
@@ -45,9 +41,10 @@ export default function DecksScreen() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleDelete = async () => {
-    const { res } = await axios
+    await axios
       .post('/api/decklists/delete', {
         id: currentDeck,
+        email: userInfo.email,
       })
       .then(setShow(false))
       .then(setRefeshKey(refreshKey + 1))
@@ -55,9 +52,6 @@ export default function DecksScreen() {
         toast.error(getError(err));
       });
   };
-
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
 
   const [{ loading, error, decks }, dispatch] = useReducer(reducer, {
     decks: [],
@@ -85,20 +79,24 @@ export default function DecksScreen() {
   // creates a new deck for user and redirects them to the edit decklist page
   const createDeck = async (e) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post('/api/decklists/new', {
-        email: userInfo.email,
-        duelist: userInfo.name,
-        isUserCreated: true,
-      });
-      const { response } = await axios.post('/api/users/addDeck', {
-        email: userInfo.email,
-        deck: data._id,
-      });
+    if (decks.length >= 15) {
+      toast.error('At maximum number of decks created');
+    } else {
+      try {
+        const { data } = await axios.post('/api/decklists/new', {
+          email: userInfo.email,
+          duelist: userInfo.name,
+          isUserCreated: true,
+        });
+        const { response } = await axios.post('/api/users/addDeck', {
+          email: userInfo.email,
+          deck: data._id,
+        });
 
-      navigate(`/editDeck/${data._id}`);
-    } catch (err) {
-      toast.error(getError(err));
+        navigate(`/editDeck/${data._id}`);
+      } catch (err) {
+        toast.error(getError(err));
+      }
     }
   };
 
@@ -126,12 +124,14 @@ export default function DecksScreen() {
       <Helmet>
         <title>My Decks</title>
       </Helmet>
-
       <br></br>
       <Row>
         <Col md={9}>
           <Stack direction="horizontal" gap={3}>
             <h4>My Decks</h4>
+            <a href="/help/myDecks" target="_blank">
+              Help
+            </a>
             {showButtons === 1 ? (
               <>
                 <Button

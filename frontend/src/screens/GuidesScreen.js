@@ -8,13 +8,15 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getError } from '../utils';
 import { useContext, useEffect, useReducer } from 'react';
+import Stack from 'react-bootstrap/esm/Stack';
+import Article2Preview from '../pictures/Article2Preview.png';
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
       return { ...state, loading: true };
     case 'FETCH_SUCCESS':
-      return { ...state, product: action.payload, loading: false };
+      return { ...state, articles: action.payload, loading: false };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
@@ -23,11 +25,34 @@ const reducer = (state, action) => {
 };
 
 export default function GuidesScreen() {
-  const [{ loading, error, product }, dispatch] = useReducer(reducer, {
-    product: [],
-    loading: false,
+  const [{ loading, error, articles }, dispatch] = useReducer(reducer, {
+    articles: [],
+    loading: true,
     error: '',
   });
+
+  function formatDate(date) {
+    var dt = new Date(date);
+    const currentMonth = dt.getMonth();
+    const monthString = currentMonth >= 10 ? currentMonth : `0${currentMonth}`;
+    const currentDate = dt.getDate();
+    return `${dt.getFullYear()}-${monthString}-${currentDate}`;
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch({ type: 'FETCH_REQUEST' });
+      try {
+        const result = await axios.get('/api/articles/guides');
+
+        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+      } catch (err) {
+        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+      }
+
+      //setProducts(result.data);
+    };
+    fetchData();
+  }, []);
 
   return loading ? (
     <LoadingBox />
@@ -35,41 +60,37 @@ export default function GuidesScreen() {
     <MessageBox variant="danger">{error}</MessageBox>
   ) : (
     <div>
+      <h2 className="article-title">Guides</h2>
+      <br></br>
       <Row>
-        <h1>Guides</h1>
-        <Col md={6}>
-          <Card border="dark">
-            <Card.Body>
-              <Link to={`/guides/best-rouge-decks-of-december-2022`}>
-                <Card.Title>The Best Rouge Decks of December 2022</Card.Title>
-              </Link>
-              <Card.Text>
-                Besides the current meta decks of Spright, Tearlaments, and
-                Floowandereeze, here are some other decks that can perform well
-                in today's metagame. If you are looking for other options, these
-                decks are able to compete against the best
-              </Card.Text>
-            </Card.Body>
-            <Card.Footer>John Doe 12/30/2022</Card.Footer>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <Card border="dark">
-            <Card.Body>
-              <Link to={`/guides/top-5-best-anime-decks-to-play`}>
-                <Card.Title>Top 5 Best Anime Decks to Play</Card.Title>
-              </Link>
-              <Card.Text>
-                Are you a fan of the TV show and feeling nostalgic to play those
-                cards? Here are some decklists using cards from our favorite
-                characters. Surprisingly, there are some decks here that can
-                hold their own.
-              </Card.Text>
-            </Card.Body>
+        {articles.map((article) => (
+          <Col key={article.slug} sm={6} md={6} className="mb-3">
+            <Card border="dark">
+              <Stack direction="horizontal" gap={3}>
+                <Link to={`/articles/${article.slug}`}>
+                  <img
+                    className="preview-img"
+                    src={`/preview/${article.img}.png`}
+                    alt="article2"
+                  ></img>
+                </Link>
+                <Card.Body>
+                  <Link to={`/articles/${article.slug}`}>
+                    <Card.Title>{article.title}</Card.Title>
+                  </Link>
+                  <Card.Text>{article.desc}</Card.Text>
+                </Card.Body>
+              </Stack>
 
-            <Card.Footer>James Smith 12/15/2022</Card.Footer>
-          </Card>
-        </Col>
+              <Card.Footer>
+                <Stack direction="horizontal" gap={3}>
+                  {article.author}
+                  <div className="ms-auto">{formatDate(article.createdAt)}</div>
+                </Stack>
+              </Card.Footer>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </div>
   );
