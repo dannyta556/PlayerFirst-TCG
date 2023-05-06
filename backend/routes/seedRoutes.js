@@ -3,8 +3,10 @@ import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import Decklist from '../models/decklistModel.js';
 import Recommendation from '../models/recommendationModel.js';
+import Article from '../models/articleModel.js';
 import data from '../data.js';
 import setData from '../sets.js';
+import articleData from '../articles.js';
 import cardData from '../cardinfo.json' assert { type: 'json' };
 import deckData from '../outfile.json' assert { type: 'json' };
 import recData from '../recommendations.json' assert { type: 'json' };
@@ -68,5 +70,10 @@ seedRouter.get('/recommendations', async (req, res) => {
   res.send({ message: 'Recommendation data imported' });
 });
 
+seedRouter.get('/articles', async (req, res) => {
+  await Article.remove({});
+  await Article.insertMany(articleData.articles);
+  res.send({ message: 'Article data imported' });
+});
 // seedRoutes was initally used to build the early features with some dummy data.
 // navigate to /api/seed to use only the dummy data

@@ -177,15 +177,11 @@ decklistRouter.get(
 decklistRouter.get(
   '/feature',
   expressAsyncHandler(async (req, res) => {
-    const deck = await Decklist.findById('6420b82908dbda2fc8a49f67');
-    const secondDeck = await Decklist.findById('6420b82908dbda2fc8a49fd1');
-    let returnArray = [];
+    const decks = await Decklist.find({ name: 'Ishizu Tearlaments' }).limit(2);
 
-    if (deck && secondDeck) {
-      returnArray.push(deck);
-      returnArray.push(secondDeck);
+    if (decks) {
       res.send({
-        decklists: returnArray,
+        decklists: decks,
       });
     } else {
       res.send({

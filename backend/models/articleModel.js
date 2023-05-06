@@ -21,6 +21,9 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  img: {
+    type: String,
+  },
 });
 
 articleSchema.pre('validate', function (next) {
