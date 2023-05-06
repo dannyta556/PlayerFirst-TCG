@@ -1,15 +1,14 @@
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
-import Rating from './Rating';
 import { Store } from '../Store';
-import { useContext, useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { getError } from '../utils';
-import Col from 'react-bootstrap/esm/Col';
 import Stack from 'react-bootstrap/esm/Stack';
 import previewSpright from '../pictures/previewSpright.png';
 import previewTearlament from '../pictures/previewTearlaments.png';
+import LoadingBox from './LoadingBox';
+import MessageBox from './MessageBox';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -38,9 +37,17 @@ function Decklist(props) {
     const fetchPrice = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const result = await axios.get(
-          `/api/decklists/price?id=${decklist._id}&email=${userInfo.email}`
-        );
+        let result;
+        if (userInfo) {
+          result = await axios.get(
+            `/api/decklists/price?id=${decklist._id}&email=${userInfo.email}`
+          );
+        } else {
+          result = await axios.get(
+            `/api/decklists/price?id=${decklist._id}&email=${''}`
+          );
+        }
+
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
@@ -48,7 +55,11 @@ function Decklist(props) {
     };
     fetchPrice();
   }, [decklist._id, userInfo]);
-  return (
+  return loading ? (
+    <LoadingBox />
+  ) : error ? (
+    <MessageBox variant="danger">{error}</MessageBox>
+  ) : (
     <Card className="decklist-card" border="dark">
       <Stack direction="horizontal" gap={3}>
         {decklist.archetype === 'Spright' ? (

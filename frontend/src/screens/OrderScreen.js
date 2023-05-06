@@ -25,7 +25,7 @@ function reducer(state, action) {
     case 'PAY_REQUEST':
       return { ...state, loadingPay: true };
     case 'PAY_SUCCESS':
-      return { ...state, loadingPay: false, successSPay: true };
+      return { ...state, loadingPay: false, successPay: true };
     case 'PAY_FAIL':
       return { ...state, loadingPay: false };
     case 'PAY_RESET':

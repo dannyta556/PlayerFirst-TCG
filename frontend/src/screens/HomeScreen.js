@@ -79,7 +79,7 @@ function HomeScreen() {
   return (
     <div>
       <Helmet>
-        <title>Kenobi's Cards</title>
+        <title>PlayerFirst TCG</title>
       </Helmet>
       <Row>
         <Col md={3}>

@@ -107,9 +107,12 @@ decklistRouter.get(
     const id = query.id;
     const email = query.email || '';
     const deck = await Decklist.findById(id);
-    const user = await User.findOne({ email });
-    let yourPrice = 0.0;
+    let user = '';
+    if (email !== '') {
+      user = await User.findOne({ email });
+    }
 
+    let yourPrice = 0.0;
     if (deck) {
       // loop through maindeck and extradeck to calculate price
       let totalPrice = 0.0;
@@ -160,7 +163,6 @@ decklistRouter.get(
         }
         yourPrice = Math.round(yourPrice * 100) / 100;
       }
-
       res.send({
         totalPrice: totalPrice,
         yourPrice: yourPrice,

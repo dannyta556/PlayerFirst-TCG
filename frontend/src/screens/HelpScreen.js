@@ -13,7 +13,7 @@ import { Helmet } from 'react-helmet-async';
 export default function HelpScreen() {
   const params = useParams();
   const { page } = params;
-  const [key, setKey] = useState(page) || 'myDeck';
+  const [key] = useState(page) || 'myDeck';
   return (
     <div>
       <Helmet>

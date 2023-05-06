@@ -55,7 +55,7 @@ export default function SignUpScreen() {
       <Helmet>
         <title>Sign Up</title>
       </Helmet>
-      <h1 className="my-2">Kenobi's Cards</h1>
+      <h1 className="my-2">PlayerFirst TCG</h1>
       <h2 className="my-3">Sign Up</h2>
       <Form onSubmit={submitHandler}>
         <Form.Group className="mb-3" controlId="name">

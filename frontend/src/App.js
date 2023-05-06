@@ -56,7 +56,7 @@ function App() {
         <header>
           <Navbar bg="light" variant="light" expand="lg">
             <LinkContainer to="/">
-              <Navbar.Brand>Kenobi's Cards</Navbar.Brand>
+              <Navbar.Brand>PlayerFirst TCG</Navbar.Brand>
             </LinkContainer>
             <SearchBox className="search-bar" />
             <Nav className="me-auto w-100 justify-content-end">

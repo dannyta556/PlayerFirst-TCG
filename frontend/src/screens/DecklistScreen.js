@@ -10,7 +10,6 @@ import { getError } from '../utils';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { Store } from '../Store';
-import { toast } from 'react-toastify';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -48,12 +47,14 @@ export default function DecklistScreen() {
     error: '',
   });
 
-  const [{ loadingPrices, pricesError, mainDeckPrices }, dispatchPrice] =
-    useReducer(mainDeckReducer, {
+  const [{ loadingPrices, pricesError }, dispatchPrice] = useReducer(
+    mainDeckReducer,
+    {
       mainDeckPrices: [],
       loadingPrices: true,
       pricesError: '',
-    });
+    }
+  );
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
@@ -88,9 +89,15 @@ export default function DecklistScreen() {
       dispatchPrice({ type: 'FETCH_REQUEST' });
       try {
         const result = await axios.get(`/api/decklists/${id}`);
-        const data = await axios.get(
-          `/api/decklists/price?id=${id}&email=${userInfo.email}`
-        );
+        let data;
+        if (userInfo) {
+          data = await axios.get(
+            `/api/decklists/price?id=${id}&email=${userInfo.email}`
+          );
+        } else {
+          data = await axios.get(`/api/decklists/price?id=${id}&email=${''}`);
+        }
+
         console.log(data);
         const prices = await axios.get(`/api/decklists/prices?id=${id}`);
         console.log(prices);
