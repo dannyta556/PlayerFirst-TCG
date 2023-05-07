@@ -246,5 +246,21 @@ productRouter.get('/:id', async (req, res) => {
 });
 
 // Admin Routes
+productRouter.post('/new', async (req, res) => {
+  let product = new Product({
+    name: req.body.name,
+    type: req.body.type,
+    desc: req.body.desc,
+    price: req.body.price,
+  });
+  try {
+    let result = await product.save();
+    if (result) {
+      res.send({ message: 'New Product Created' });
+    }
+  } catch (e) {
+    res.status(401).send({ message: 'Failed to create new product' });
+  }
+});
 
 export default productRouter;

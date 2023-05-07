@@ -1,7 +1,6 @@
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -39,6 +38,15 @@ export default function DashboardScreen() {
     e.preventDefault();
     try {
       // send post request to /api/product/newproduct
+      const res = await Axios.post('/api/products/new', {
+        name: name,
+        type: type,
+        desc: desc,
+        price: price,
+      });
+      if (res) {
+        toast.success(res.data.message);
+      }
     } catch (err) {
       toast.error(getError(err));
     }
@@ -48,8 +56,7 @@ export default function DashboardScreen() {
     try {
       // send post request to /api/articles/new
       const date = todayDate();
-      console.log(type);
-      const { data } = await Axios.post('/api/articles/new', {
+      const res = await Axios.post('/api/articles/new', {
         title: title,
         author: author,
         type: type,
@@ -57,7 +64,7 @@ export default function DashboardScreen() {
         markdown: markdown,
         createdAt: date,
       });
-      toast.success('New article created');
+      toast.success(res.data.message);
     } catch (err) {
       toast.error(getError(err));
     }
@@ -111,7 +118,10 @@ export default function DashboardScreen() {
                 <Form.Group className="mb-3" controlId="price">
                   <Form.Label>Price</Form.Label>
                   <Form.Control
-                    type="text"
+                    type="number"
+                    min="0.00"
+                    max="10000.00"
+                    step="0.01"
                     required
                     onChange={(e) => setPrice(e.target.value)}
                   />

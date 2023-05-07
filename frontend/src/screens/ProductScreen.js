@@ -109,6 +109,8 @@ function ProductScreen() {
             //product.card_images[0].image_url frontend\public\cardIMG\1st Movement Solo.jpg
             src={`/images/${imageName
               .replace(/['"]/g, '')
+              .replace(/☆/g, '_')
+              .replace(/★/g, '_')
               .replace(/:/g, '')}.jpg`}
             alt={product.name}
           ></img>

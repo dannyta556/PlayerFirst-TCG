@@ -59,8 +59,10 @@ articleRouter.post('/new', async (req, res) => {
     author: req.body.author,
   });
   try {
-    await article.save();
-    res.send(article);
+    let result = await article.save();
+    if (result) {
+      res.send({ message: 'New Article Created' });
+    }
   } catch (e) {
     res.status(401).send({ message: 'Failed to create new article' });
   }

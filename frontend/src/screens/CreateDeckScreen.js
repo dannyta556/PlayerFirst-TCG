@@ -620,6 +620,9 @@ export default function CreateDeckScreen() {
                         <img
                           src={`/images/${card.name
                             .replace(/ /g, '_')
+                            .replace(/['"]/g, '')
+                            .replace(/☆/g, '_')
+                            .replace(/★/g, '_')
                             .replace(/:/g, '')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"

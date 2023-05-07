@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
 import { Store } from '../Store';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import axios from 'axios';
 import Stack from 'react-bootstrap/esm/Stack';
 
@@ -39,6 +39,8 @@ function Product(props) {
             src={`/images/${product.name
               .replace(/ /g, '_')
               .replace(/["]/g, '')
+              .replace(/☆/g, '_')
+              .replace(/★/g, '_')
               .replace(/:/g, '')}.jpg`}
             className="card-img-top"
             alt={product.name}

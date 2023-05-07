@@ -68,6 +68,14 @@ export default function OrderScreen() {
       });
   }
 
+  function formatDate(date) {
+    var dt = new Date(date);
+    const currentMonth = dt.getMonth();
+    const monthString = currentMonth >= 10 ? currentMonth : `0${currentMonth}`;
+    const currentDate = dt.getDate();
+    return `${dt.getFullYear()}-${monthString}-${currentDate}`;
+  }
+
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
@@ -168,7 +176,7 @@ export default function OrderScreen() {
               </Card.Text>
               {order.isPaid ? (
                 <MessageBox variant="success">
-                  Paid at {order.paidAt}
+                  Paid at {formatDate(order.paidAt)}
                 </MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Paid</MessageBox>
