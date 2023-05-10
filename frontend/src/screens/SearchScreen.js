@@ -79,6 +79,8 @@ export default function SearchScreen() {
   const query = sp.get('query') || 'all';
   const price = sp.get('price') || 'all';
   const rating = sp.get('rating') || 'all';
+  const type = sp.get('type') || 'all';
+  const archetype = sp.get('archetype') || 'all';
   const order = sp.get('order') || 'newest';
   const page = sp.get('page') || 1;
 
@@ -91,9 +93,8 @@ export default function SearchScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}`
         const { data } = await axios.get(
-          `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}`
+          `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}&type=${type}&archetype=${archetype}`
         );
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
@@ -104,9 +105,11 @@ export default function SearchScreen() {
       }
     };
     fetchData();
-  }, [category, error, order, page, price, query, rating]);
+  }, [category, error, order, page, price, query, rating, type, archetype]);
 
   const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [archetypes, setArchetypes] = useState([]);
 
   useEffect(
     () => {
@@ -123,6 +126,36 @@ export default function SearchScreen() {
     [dispatch],
     categories
   );
+  useEffect(
+    () => {
+      const fetchTypes = async () => {
+        try {
+          const { data } = await axios.get(`/api/products/cardTypes`);
+          setTypes(data);
+        } catch (err) {
+          toast.error(getError(err));
+        }
+      };
+      fetchTypes();
+    },
+    [dispatch],
+    types
+  );
+  useEffect(
+    () => {
+      const fetchArchetypes = async () => {
+        try {
+          const { data } = await axios.get(`/api/products/archetypes`);
+          setArchetypes(data);
+        } catch (err) {
+          toast.error(getError(err));
+        }
+      };
+      fetchArchetypes();
+    },
+    [dispatch],
+    types
+  );
 
   const getFilterUrl = (filter) => {
     const filterPage = filter.page || page;
@@ -131,8 +164,10 @@ export default function SearchScreen() {
     const filterRating = filter.rating || rating;
     const filterPrice = filter.price || price;
     const sortOrder = filter.order || order;
+    const filterType = filter.type || type;
+    const filterArchetype = filter.archetype || archetype;
 
-    return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}`;
+    return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}&type=${filterType}&archetype=${filterArchetype}`;
   };
   return (
     <div>
@@ -188,27 +223,63 @@ export default function SearchScreen() {
               ))}
             </ul>
           </div>
-          <div>
-            <h3>Avg. Customer Review</h3>
-            <ul>
-              {ratings.map((r) => (
-                <li key={r.name}>
+          {category !== 'single' ? (
+            <div>
+              <h3>Avg. Customer Review</h3>
+              <ul>
+                {ratings.map((r) => (
+                  <li key={r.name}>
+                    <Link
+                      to={getFilterUrl({ rating: r.rating })}
+                      className={
+                        `${r.rating}` === `${rating}` ? 'text-bold' : ''
+                      }
+                    >
+                      <Rating caption={' & up'} rating={r.rating}></Rating>
+                    </Link>
+                  </li>
+                ))}
+                <li>
                   <Link
-                    to={getFilterUrl({ rating: r.rating })}
-                    className={`${r.rating}` === `${rating}` ? 'text-bold' : ''}
+                    to={getFilterUrl({ rating: 'all' })}
+                    className={rating === 'all' ? 'text-bold' : ''}
                   >
-                    <Rating caption={' & up'} rating={r.rating}></Rating>
+                    <Rating caption={' & up'} rating={0}></Rating>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <></>
+          )}
+          <div>
+            <h3>Types</h3>
+            <ul className="filter-side">
+              {types.map((a) => (
+                <li key={a}>
+                  <Link
+                    className={a === type ? 'text-bold' : 'bold-link'}
+                    to={getFilterUrl({ type: a })}
+                  >
+                    {a}
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link
-                  to={getFilterUrl({ rating: 'all' })}
-                  className={rating === 'all' ? 'text-bold' : ''}
-                >
-                  <Rating caption={' & up'} rating={0}></Rating>
-                </Link>
-              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Archetypes</h3>
+            <ul className="filter-side">
+              {archetypes.map((a) => (
+                <li key={a}>
+                  <Link
+                    className={a === archetype ? 'text-bold' : 'bold-link'}
+                    to={getFilterUrl({ archetype: a })}
+                  >
+                    {a}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </Col>
@@ -227,6 +298,8 @@ export default function SearchScreen() {
                     {category !== 'all' && ' : ' + category}
                     {price !== 'all' && ' : Price ' + price}
                     {rating !== 'all' && ' : Rating ' + rating + ' & up'}
+                    {type !== 'all' && ' : Type ' + type}
+                    {archetype !== 'all' && ' : Archetype ' + archetype}
                     {query !== 'all' ||
                     category !== 'all' ||
                     rating !== 'all' ||

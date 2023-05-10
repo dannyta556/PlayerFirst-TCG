@@ -14,21 +14,6 @@ const seedRouter = express.Router();
 
 seedRouter.get('/', async (req, res) => {
   await Product.remove({}); // remove all previous records in the product model
-  await Product.insertMany(data.products);
-  await Product.updateMany(
-    {},
-    {
-      $set: {
-        numReviews: 10,
-        rating: 4.0,
-        countInStock: 10,
-        category: 'single',
-        brand: 'Yugioh',
-      },
-    }
-  );
-  await Decklist.remove({});
-  await Decklist.insertMany(data.decklists);
 
   await User.remove({});
   const createdUsers = await User.insertMany(data.users);
@@ -36,14 +21,14 @@ seedRouter.get('/', async (req, res) => {
 });
 
 seedRouter.get('/import', async (req, res) => {
-  await Product.remove({});
+  await Product.remove({ category: 'single' });
   await Product.insertMany(cardData.data);
   await Product.updateMany(
     {},
     {
       $set: {
         numReviews: 10,
-        rating: 4.0,
+        rating: 0.0,
         countInStock: 10,
         category: 'single',
         brand: 'Yugioh',
@@ -59,7 +44,8 @@ seedRouter.get('/importDecklists', async (req, res) => {
 });
 
 seedRouter.get('/sets', async (req, res) => {
-  await Product.insertMany(setData.products);
+  await Product.remove({ category: 'set' });
+  await Product.insertMany(setData.products, { $set: { category: 'set' } });
   res.send({ message: 'Card sets have been added' });
 });
 export default seedRouter;
@@ -75,5 +61,6 @@ seedRouter.get('/articles', async (req, res) => {
   await Article.insertMany(articleData.articles);
   res.send({ message: 'Article data imported' });
 });
+
 // seedRoutes was initally used to build the early features with some dummy data.
 // navigate to /api/seed to use only the dummy data

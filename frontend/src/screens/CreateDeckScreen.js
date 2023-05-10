@@ -311,17 +311,7 @@ export default function CreateDeckScreen() {
     };
     fetchData();
   }, [email, id, refreshKey, navigate, userInfo.email]);
-  /*
-  useEffect(() => {
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
-    document.addEventListener('contextmenu', handleContextMenu);
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
-    };
-  }, []);
-*/
+
   return (
     <div>
       <Helmet>
@@ -582,8 +572,13 @@ export default function CreateDeckScreen() {
                     <br></br>
                     <img
                       src={`/images/${previewName
-                        .replace(/:/g, '')
-                        .replace(/ /g, '_')}.jpg`}
+                        .replace(/ /g, '_')
+                        .replace(/['"]/g, '')
+                        .replace(/☆/g, '_')
+                        .replace(/★/g, '_')
+                        .replace(/α/g, 'a')
+                        .replace(/[/]/g, '')
+                        .replace(/:/g, '')}.jpg`}
                       alt={previewName}
                       className=" rounded card-preview"
                     ></img>
@@ -614,7 +609,7 @@ export default function CreateDeckScreen() {
             <Row>
               <Container className="results-box">
                 <Row>
-                  {products !== null ? (
+                  {products !== null && products.length !== 0 ? (
                     products.map((card) => (
                       <Col sm={3} key={card._id}>
                         <img
@@ -623,6 +618,8 @@ export default function CreateDeckScreen() {
                             .replace(/['"]/g, '')
                             .replace(/☆/g, '_')
                             .replace(/★/g, '_')
+                            .replace(/α/g, 'a')
+                            .replace(/[/]/g, '')
                             .replace(/:/g, '')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"
@@ -639,7 +636,7 @@ export default function CreateDeckScreen() {
                       </Col>
                     ))
                   ) : (
-                    <></>
+                    <p>No Results Found.</p>
                   )}
                 </Row>
               </Container>
@@ -687,6 +684,11 @@ export default function CreateDeckScreen() {
                     <img
                       src={`/images/${card.name
                         .replace(/ /g, '_')
+                        .replace(/['"]/g, '')
+                        .replace(/☆/g, '_')
+                        .replace(/★/g, '_')
+                        .replace(/α/g, 'a')
+                        .replace(/[/]/g, '')
                         .replace(/:/g, '')}.jpg`}
                       alt={card.name}
                       className="card-rec-img"

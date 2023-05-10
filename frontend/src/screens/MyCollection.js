@@ -30,7 +30,7 @@ const reducer = (state, action) => {
 };
 
 function MyCollection() {
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { userInfo } = state;
 
   const email = userInfo.email;
@@ -407,8 +407,13 @@ function MyCollection() {
                     <br></br>
                     <img
                       src={`/images/${previewName
-                        .replace(/:/g, '')
-                        .replace(/ /g, '_')}.jpg`}
+                        .replace(/ /g, '_')
+                        .replace(/['"]/g, '')
+                        .replace(/☆/g, '_')
+                        .replace(/★/g, '_')
+                        .replace(/α/g, 'a')
+                        .replace(/[/]/g, '')
+                        .replace(/:/g, '')}.jpg`}
                       alt={previewName}
                       className=" rounded card-preview"
                     ></img>
@@ -437,6 +442,11 @@ function MyCollection() {
                         <img
                           src={`/images/${card.name
                             .replace(/ /g, '_')
+                            .replace(/['"]/g, '')
+                            .replace(/☆/g, '_')
+                            .replace(/★/g, '_')
+                            .replace(/α/g, 'a')
+                            .replace(/[/]/g, '')
                             .replace(/:/g, '')}.jpg`}
                           alt={card.name}
                           className="img-fluid rounded img-thumbnail"

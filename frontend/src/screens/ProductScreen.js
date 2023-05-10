@@ -108,9 +108,12 @@ function ProductScreen() {
             className="img-large"
             //product.card_images[0].image_url frontend\public\cardIMG\1st Movement Solo.jpg
             src={`/images/${imageName
+              .replace(/ /g, '_')
               .replace(/['"]/g, '')
               .replace(/☆/g, '_')
               .replace(/★/g, '_')
+              .replace(/α/g, 'a')
+              .replace(/[/]/g, '')
               .replace(/:/g, '')}.jpg`}
             alt={product.name}
           ></img>

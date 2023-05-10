@@ -18,6 +18,7 @@ const productSchema = new mongoose.Schema(
     atk: { type: Number, required: false },
     def: { type: Number, required: false },
     attribute: { type: String, required: false },
+    archetype: { type: String, required: false },
     number: { type: String, required: false },
     rarity: { type: String, required: false },
     card_sets: { type: Array, required: false },
@@ -37,8 +38,11 @@ productSchema.pre('validate', function (next) {
     //this.price = parseFloat(this.card_prices[0].cardmarket_price);
     if (this.card_prices.length > 0) {
       this.price = parseFloat(Object.values(this.card_prices[0]));
+      if (this.price == 0) {
+        this.price = parseFloat(0.01);
+      }
     } else {
-      this.price = 1.0;
+      this.price = parseFloat(1.0);
     }
   }
   next();

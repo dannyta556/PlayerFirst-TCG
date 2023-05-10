@@ -41,6 +41,9 @@ function Product(props) {
               .replace(/["]/g, '')
               .replace(/☆/g, '_')
               .replace(/★/g, '_')
+              .replace(/α/g, 'a')
+              .replace(/☆/g, '_')
+              .replace(/[/]/g, '')
               .replace(/:/g, '')}.jpg`}
             className="card-img-top"
             alt={product.name}

@@ -25,6 +25,8 @@ productRouter.get(
     const rating = query.rating || '';
     const order = query.order || '';
     const searchQuery = query.query || '';
+    const type = query.type || '';
+    const archetype = query.archetype || '';
 
     const queryFilter =
       searchQuery && searchQuery !== 'all'
@@ -70,11 +72,16 @@ productRouter.get(
         ? { createdAt: -1 }
         : { _id: -1 };
 
+    const typeFilter = type && type !== 'all' ? { type } : {};
+    const archetypeFilter =
+      archetype && archetype !== 'all' ? { archetype } : {};
     const products = await Product.find({
       ...queryFilter,
       ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
+      ...typeFilter,
+      ...archetypeFilter,
     })
       .sort(sortOrder)
       .skip(pageSize * (page - 1))
@@ -85,6 +92,8 @@ productRouter.get(
       ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
+      ...typeFilter,
+      ...archetypeFilter,
     });
     let returnpages = 0;
     if (Math.ceil(countProducts / pageSize) > 20) {
@@ -115,11 +124,10 @@ productRouter.get(
 
     // For card search
     const level = query.level || '';
-    const cardType = query.cardType || '';
+    const type = query.cardType || '';
     const atk = query.atk || '';
     const def = query.def || '';
     const attribute = query.attribute || '';
-
     const queryFilter =
       searchQuery && searchQuery !== 'all'
         ? {
@@ -131,11 +139,26 @@ productRouter.get(
         : {};
 
     const categoryFilter = category && category !== 'all' ? { category } : {};
-
-    const lvlFilter = level;
-    const attributeFilter = attribute;
-    const atkFilter = atk;
-    const defFilter = def;
+    const cardTypeFilter = type && type !== 'all' ? { type } : {};
+    const lvlFilter = level && level !== 'all' ? { level } : {};
+    const attributeFilter =
+      attribute && attribute !== 'all' ? { attribute } : {};
+    const atkFilter =
+      atk && atk !== 'all'
+        ? {
+            atk: {
+              $gte: Number(atk),
+            },
+          }
+        : {};
+    const defFilter =
+      def && def !== 'all'
+        ? {
+            def: {
+              $gte: Number(def),
+            },
+          }
+        : {};
 
     const products = await Product.find({
       ...queryFilter,
@@ -144,6 +167,7 @@ productRouter.get(
       ...attributeFilter,
       ...atkFilter,
       ...defFilter,
+      ...cardTypeFilter,
     })
       .skip(pageSize * (page - 1))
       .limit(pageSize);
@@ -155,6 +179,7 @@ productRouter.get(
       ...attributeFilter,
       ...atkFilter,
       ...defFilter,
+      ...cardTypeFilter,
     });
     let returnpages = 0;
     if (Math.ceil(countProducts / pageSize) > 10) {
@@ -205,6 +230,14 @@ productRouter.get(
     const cardTypes = await Product.find().distinct('type');
 
     res.send(cardTypes);
+  })
+);
+
+productRouter.get(
+  '/archetypes',
+  expressAsyncHandler(async (req, res) => {
+    const archetypes = await Product.find().distinct('archetype');
+    res.send(archetypes);
   })
 );
 
