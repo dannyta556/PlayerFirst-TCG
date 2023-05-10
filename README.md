@@ -2,12 +2,15 @@
 
 # Features
 <ol>
-Home Screen
-Product Pages
-My Collection
-Orders
-Create a Deck
-Tournament Decklists
-User Decklists
-Card Recommendation System
+<li>Home Screen </li>
+<li>Search Screen</li>
+<li>Product Page</li>
+<li>Shopping Cart</li>
+<li>PayPal</li>
+<li>My Collection</li>
+<li>Orders</li>
+<li>Create a Deck</li>
+<li>Tournament Decklists</li>
+<li>User Decklists</li>
+<li>Card Recommendation System</li>
 </ol>
