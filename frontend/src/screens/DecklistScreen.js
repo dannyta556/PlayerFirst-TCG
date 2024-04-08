@@ -98,9 +98,7 @@ export default function DecklistScreen() {
           data = await axios.get(`/api/decklists/price?id=${id}&email=${''}`);
         }
 
-        console.log(data);
         const prices = await axios.get(`/api/decklists/prices?id=${id}`);
-        console.log(prices);
         setMDPrices(prices.data.mainDeckPrices);
         setEDPrices(prices.data.extraDeckPrices);
         setTotalPrice(data.data.totalPrice);
