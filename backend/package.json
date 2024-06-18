@@ -21,7 +21,8 @@
     "marked": "^4.2.12",
     "mongoose": "^6.8.3",
     "mongoose-slug-generator": "^1.0.4",
-    "slugify": "^1.6.5"
+    "slugify": "^1.6.5",
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
